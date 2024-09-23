@@ -76,30 +76,6 @@
         nav ul li a:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: rgba(51, 51, 51, 0.9);
-            min-width: 200px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        .dropdown-content a {
-            color: #fff;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-            transition: all 0.3s ease;
-        }
-        .dropdown-content a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
         #good-news {
             background-color: rgba(34, 34, 34, 0.6);
             padding: 30px;
@@ -109,17 +85,6 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-        }
-        #good-news::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('/api/placeholder/800/400') center/cover no-repeat;
-            opacity: 0.2;
-            z-index: -1;
         }
         #good-news:hover {
             transform: translateY(-5px);
@@ -140,49 +105,9 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        #email-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
-        }
-        .section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-        .section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        #cursor-glow {
-            position: fixed;
-            pointer-events: none;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-        @media (max-width: 768px) {
-            nav ul {
-                flex-direction: column;
-            }
-            nav ul li {
-                margin: 5px 0;
-            }
-            .dropdown-content {
-                position: static;
-                display: none;
-                width: 100%;
-            }
-            .dropdown:hover .dropdown-content {
-                display: block;
-            }
-        }
     </style>
 </head>
 <body>
-    <div id="cursor-glow"></div>
     <div class="container">
         <h1 id="main-title">HYPOTHIUS PICTUREHOUSE</h1>
         <nav>
@@ -191,31 +116,10 @@
                 <li><a href="https://discord.gg/V5cwEAa9h5">COMMUNITY</a></li>
                 <li><a href="https://open.spotify.com/show/48mowLvfVjOyrTPmTPw34c">PODCAST</a></li>
                 <li><a href="https://hypothiusnews.beehiiv.com/">HYPOTHIUS NEWS</a></li>
-                <li class="dropdown">
-                    <a href="#">TUTORIALS</a>
-                    <div class="dropdown-content">
-                        <a href="https://www.youtube.com/watch?v=UvmsJamKm8o&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=4&t=2540s">PHOTOSHOP COURSE</a>
-                        <a href="https://youtu.be/57vRTEwjH7w?si=LZJ1ZnvEhjRxO6Dy">CANVA TUTORIAL</a>
-                        <a href="https://www.youtube.com/watch?v=2yZLiT4bjBI&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=2&t=630s">CAPCUT TUTORIAL</a>
-                        <a href="https://www.facebook.com/share/Px5tMFnSkH7tW8o6/">ADOBE CREATIVE CLOUD EBOOK (PAID)</a>
-                        <a href="https://mcusercontent.com/237a1a39cec38eb438a2131c1/files/f7d7a509-d2b6-6660-b968-083efb555774/Film_Resource_Sheets.pdf">NO-BUDGET FILMMAKING GUIDE</a>
-                        <a href="https://www.youtube.com/playlist?list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT">MORE TUTORIALS</a>
-                    </div>
-                </li>
-                <li><a href="https://noplacelikeome.com/">CLOTHING</a></li>
-                <li class="dropdown">
-                    <a href="#">SOFTWARE</a>
-                    <div class="dropdown-content">
-                        <a href="https://mememaker.tiiny.site/?fbclid=IwZXh0bgNhZW0CMTAAAR1CcY6ONcBBoAeXpMAP7h1gOJEIiFpYVZz3V3F67h8">MEME GENERATOR</a>
-                        <a href="https://hypothius.com/courses/free-video-essentials-course-2/">FREE VIDEO ESSENTIALS COURSE</a>
-                        <a href="https://www.canva.com/templates/EAE4mfG8DCk-modern-ecommerce-website-template/">ECOMMERCE TEMPLATES</a>
-                        <a href="https://www.adobe.com/express/">ADOBE EXPRESS</a>
-                    </div>
-                </li>
                 <li><a href="#contact">CONTACT</a></li>
             </ul>
         </nav>
-        <div id="good-news" class="section">
+        <div id="good-news">
             <h2>Good News</h2>
             <div id="news-content">Loading news...</div>
         </div>
@@ -228,16 +132,15 @@
 
             // Fetch good news
             const newsContent = document.getElementById('news-content');
-            const apiKey = '51fef0c7d39f44dc9fe08081e964e269'; // Replace with your actual API key
 
-            fetch(`https://newsapi.org/v2/everything?q=good%20news&apiKey=${apiKey}`)
+            fetch('https://api.positive.news/v1/articles?limit=5')
                 .then(response => response.json())
                 .then(data => {
                     if (data.articles.length > 0) {
                         newsContent.innerHTML = data.articles.map(article => `
                             <div>
                                 <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-                                <p>${article.description}</p>
+                                <p>${article.excerpt}</p>
                             </div>
                         `).join('');
                     } else {
@@ -248,27 +151,7 @@
                     console.error('Error fetching news:', error);
                     newsContent.innerHTML = 'Failed to load good news.';
                 });
-
-            // Scroll animation
-            window.addEventListener('scroll', () => {
-                document.querySelectorAll('.section').forEach(section => {
-                    const rect = section.getBoundingClientRect();
-                    if (rect.top < window.innerHeight && rect.bottom > 0) {
-                        section.classList.add('visible');
-                    }
-                });
-            });
-        });
-
-        // Cursor effect
-        document.addEventListener('mousemove', (e) => {
-            const cursorGlow = document.getElementById('cursor-glow');
-            cursorGlow.style.left = e.pageX + 'px';
-            cursorGlow.style.top = e.pageY + 'px';
         });
     </script>
 </body>
 </html>
-
-
-
