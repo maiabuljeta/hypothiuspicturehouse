@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPOTHIUS PICTUREHOUSE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 4em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #ffff00, #00ff00);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        nav {
+            background-color: rgba(51, 51, 51, 0.8);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            margin-bottom: 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 5px;
+            position: relative;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            border-radius: 25px;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(51, 51, 51, 0.9);
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #fff;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        .dropdown-content a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        #good-news {
+            background-color: rgba(34, 34, 34, 0.6);
+            padding: 30px;
+            margin-top: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #good-news::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/api/placeholder/800/400') center/cover no-repeat;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        #good-news:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        #email-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            margin-top: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #email-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+        }
+        .section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #cursor-glow {
+            position: fixed;
+            pointer-events: none;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+            nav ul li {
+                margin: 5px 0;
+            }
+            .dropdown-content {
+                position: static;
+                display: none;
+                width: 100%;
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor-glow"></div>
+    <div class="container">
+        <h1 id="main-title">HYPOTHIUS PICTUREHOUSE</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">HOME</a></li>
+                <li><a href="https://discord.gg/V5cwEAa9h5">COMMUNITY</a></li>
+                <li><a href="https://open.spotify.com/show/48mowLvfVjOyrTPmTPw34c">PODCAST</a></li>
+                <li><a href="https://hypothiusnews.beehiiv.com/">HYPOTHIUS NEWS</a></li>
+                <li class="dropdown">
+                    <a href="#">TUTORIALS</a>
+                    <div class="dropdown-content">
+                        <a href="https://www.youtube.com/watch?v=UvmsJamKm8o&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=4&t=2540s">PHOTOSHOP COURSE</a>
+                        <a href="https://youtu.be/57vRTEwjH7w?si=LZJ1ZnvEhjRxO6Dy">CANVA TUTORIAL</a>
+                        <a href="https://www.youtube.com/watch?v=2yZLiT4bjBI&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=2&t=630s">CAPCUT TUTORIAL</a>
+                        <a href="https://www.facebook.com/share/Px5tMFnSkH7tW8o6/">ADOBE CREATIVE CLOUD EBOOK (PAID)</a>
+                        <a href="https://mcusercontent.com/237a1a39cec38eb438a2131c1/files/f7d7a509-d2b6-6660-b968-083efb555774/Film_Resource_Sheets.pdf">NO-BUDGET FILMMAKING GUIDE</a>
+                        <a href="https://www.youtube.com/playlist?list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT">MORE TUTORIALS</a>
+                    </div>
+                </li>
+                <li><a href="https://noplacelikeome.com/">CLOTHING</a></li>
+                <li class="dropdown">
+                    <a href="#">SOFTWARE</a>
+                    <div class="dropdown-content">
+                        <a href="https://mememaker.tiiny.site/?fbclid=IwZXh0bgNhZW0CMTAAAR1CcY6ONcBBoAeXpMAP7h1gOJEIiFpYVZz3DgzaWZljJsR354AvIlRt1fs_aem_bGfqyWgXzBVUbJkdevGNLQ">FREE MOVIE SCHEDULING SOFTWARE</a>
+                        <a href="https://mememaker.tiiny.site/?fbclid=IwZXh0bgNhZW0CMTAAAR1CcY6ONcBBoAeXpMAP7h1gOJEIiFpYVZz3DgzaWZljJsR354AvIlRt1fs_aem_bGfqyWgXzBVUbJkdevGNLQ">WATERMARK-FREE MEME CREATOR</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="good-news" class="section">
+            <h2>GOOD NEWS</h2>
+            <p id="news-content">Loading good news...</p>
+        </div>
+
+        <div id="about" class="section">
+            <h2>ABOUT HYPOTHIUS PICTUREHOUSE</h2>
+            <p>Hypothius Picturehouse, founded by Maia Buljeta, is a production company focused on creating transformative change by blending entertainment with real-world impact. The company's mission revolves around using storytelling to inspire and empower socially conscious innovators. Through its projects, Hypothius Picturehouse seeks to push boundaries and highlight pressing global issues, delivering content that is both thought-provoking and meaningful.</p>
+            <p>The company's approach to film and media production emphasizes sustainability and social responsibility. Hypothius Picturehouse is committed to creating a lasting influence by building sustainable futures. This focus goes beyond entertainment, as it seeks to directly contribute to real-world solutions and advocate for environmental and social causes through its creative work.</p>
+            <p>Driven by a visionary leadership style, Hypothius Picturehouse is not just a typical film production company but a platform for transformative storytelling. It aims to shape culture and society by merging creative narratives with a purpose, establishing a new standard for media that goes beyond passive consumption to engage audiences in the change they wish to see in the world.</p>
+        </div>
+
+        <button id="email-button">
+            ✉ CONTACT US
+        </button>
+    </div>
+
+    <script>
+        // Simulated good news data (replace with actual API call or data source)
+        const goodNews = [
+            "Scientists develop new sustainable energy source",
+            "Global poverty rates reach historic low",
+            "Endangered species makes remarkable comeback",
+            "Breakthrough in cancer treatment shows promising results",
+            "Community project provides clean water to remote village"
+        ];
+
+        function updateGoodNews() {
+            const newsElement = document.getElementById('news-content');
+            const randomNews = goodNews[Math.floor(Math.random() * goodNews.length)];
+            gsap.to(newsElement, {opacity: 0, duration: 0.5, onComplete: () => {
+                newsElement.textContent = randomNews;
+                gsap.to(newsElement, {opacity: 1, duration: 0.5});
+            }});
+        }
+
+        // Update news every 10 seconds
+        updateGoodNews();
+        setInterval(updateGoodNews, 10000);
+
+        // Animate sections on scroll
+        function animateSections() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                if (sectionTop < windowHeight * 0.75) {
+                    section.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', animateSections);
+        window.addEventListener('load', animateSections);
+
+        // Email button animation and functionality
+        const emailButton = document.getElementById('email-button');
+        emailButton.addEventListener('mouseover', () => {
+            gsap.to(emailButton, {scale: 1.1, duration: 0.3});
+        });
+        emailButton.addEventListener('mouseout', () => {
+            gsap.to(emailButton, {scale: 1, duration: 0.3});
+        });
+        emailButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            gsap.to(emailButton, {scale: 0.9, duration: 0.1, onComplete: () => {
+                gsap.to(emailButton, {scale: 1, duration: 0.1, onComplete: () => {
+                    window.location.href = "mailto:maiabuljeta@gmail.com";
+                }});
+            }});
+        });
+
+        // Initial animations
+        gsap.from("h1", {opacity: 0, y: -50, duration: 1, ease: "power3.out"});
+        gsap.from("nav", {opacity: 0, y: -20, duration: 1, delay: 0.5, ease: "power3.out"});
+
+        // Cursor glow effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursorGlow, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    </script>
+</body>
+</html>
