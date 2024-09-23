@@ -231,6 +231,37 @@
             <p>Driven by a visionary leadership style, Hypothius Picturehouse is not just a typical film production company but a platform for transformative storytelling. It aims to shape culture and society by merging creative narratives with a purpose, establishing a new standard for media that goes beyond passive consumption to engage audiences in the change they wish to see in the world.</p>
         </div>
 
+        const apiKey = '51fef0c7d39f44dc9fe08081e964e269'; // Replace with your actual API key
+
+async function fetchGoodNews() {
+    try {
+        const response = await fetch(`https://newsapi.org/v2/everything?q=positive OR good news OR breakthrough OR inspiration&language=en&apiKey=${apiKey}`);
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+            // Extract relevant news data (e.g., titles of articles)
+            const goodNews = data.articles.map(article => article.title);
+            
+            // Log the good news or integrate it into your UI
+            console.log('Good News:', goodNews);
+            
+            // Example of displaying good news on the page
+            goodNews.forEach(news => {
+                const newsItem = document.createElement('p');
+                newsItem.textContent = news;
+                document.body.appendChild(newsItem);
+            });
+        } else {
+            console.error('Error fetching news:', data);
+        }
+    } catch (error) {
+        console.error('Error with API request:', error);
+    }
+}
+
+// Call the function to fetch and display good news
+fetchGoodNews();
+
         <button id="email-button">
             ✉ CONTACT US
         </button>
