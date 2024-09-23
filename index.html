@@ -90,6 +90,17 @@
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
         }
+        .article {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .article img {
+            width: 100px;
+            height: auto;
+            margin-right: 15px;
+            border-radius: 8px;
+        }
         #email-button {
             display: inline-block;
             background: linear-gradient(45deg, #ff00ff, #00ffff);
@@ -133,14 +144,17 @@
             // Fetch good news
             const newsContent = document.getElementById('news-content');
 
-            fetch('https://api.positive.news/v1/articles?limit=5')
+            fetch('https://newsapi.org/v2/top-headlines?country=us&category=good-news&apiKey=YOUR_API_KEY_HERE')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.articles.length > 0) {
+                    if (data.articles && data.articles.length > 0) {
                         newsContent.innerHTML = data.articles.map(article => `
-                            <div>
-                                <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-                                <p>${article.excerpt}</p>
+                            <div class="article">
+                                <img src="${article.urlToImage || 'https://via.placeholder.com/100'}" alt="${article.title}">
+                                <div>
+                                    <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
+                                    <p>${article.description || ''}</p>
+                                </div>
                             </div>
                         `).join('');
                     } else {
@@ -155,3 +169,4 @@
     </script>
 </body>
 </html>
+
