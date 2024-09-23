@@ -238,121 +238,67 @@
     </div>
 
     <script>
-        // Simulated good news data (replace with actual API call or data source)
-        const goodNews = [
-            "Scientists develop new sustainable energy source",
-            "Global poverty rates reach historic low",
-            "Endangered species makes remarkable comeback",
-            "Breakthrough in cancer treatment shows promising results",
-            "Community project provides clean water to remote village"
-        ];
+ // Simulated good news data (replace with actual API call or data source)
+const goodNews = [
+    {
+        title: "Scientists Develop Sustainable Energy Source from Waste",
+        url: "https://www.sciencedaily.com/releases/2023/03/230316094153.htm",
+        image: "https://www.sciencedaily.com/images/2023/03/230316094153_1_900x600.jpg"
+    },
+    {
+        title: "Endangered species makes remarkable comeback",
+        url: "https://example.com/endangered-species",
+        image: "https://example.com/images/endangered-species.jpg"
+    },
+    {
+        title: "Breakthrough in cancer treatment shows promising results",
+        url: "https://example.com/cancer-treatment",
+        image: "https://example.com/images/cancer-treatment.jpg"
+    },
+    {
+        title: "Community project provides clean water to remote village",
+        url: "https://example.com/clean-water",
+        image: "https://example.com/images/clean-water.jpg"
+    }
+];
 
-        function updateGoodNews() {
-            const newsElement = document.getElementById('news-content');
-            const randomNews = goodNews[Math.floor(Math.random() * goodNews.length)];
-            gsap.to(newsElement, {opacity: 0, duration: 0.5, onComplete: () => {
-                newsElement.textContent = randomNews;
-                gsap.to(newsElement, {opacity: 1, duration: 0.5});
-            }});
+function updateGoodNews() {
+    const newsElement = document.getElementById('news-content');
+    const randomNews = goodNews[Math.floor(Math.random() * goodNews.length)];
+    
+    // Create the new content
+    const newsHtml = `
+        <a href="${randomNews.url}" target="_blank">
+            <h2>${randomNews.title}</h2>
+            <img src="${randomNews.image}" alt="${randomNews.title}" style="width: 100%; height: auto;">
+        </a>
+    `;
+    
+    gsap.to(newsElement, { opacity: 0, duration: 0.5, onComplete: () => {
+        newsElement.innerHTML = newsHtml;
+        gsap.to(newsElement, { opacity: 1, duration: 0.5 });
+    }});
+}
+
+// Update news every 10 seconds
+updateGoodNews();
+setInterval(updateGoodNews, 10000);
+
+// Animate sections on scroll
+function animateSections() {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        if (sectionTop < windowHeight * 0.75) {
+            section.classList.add('visible');
         }
+    });
+}
 
-        // Update news every 10 seconds
-        updateGoodNews();
-        setInterval(updateGoodNews, 10000);
+window.addEventListener('scroll', animateSections);
+window.addEventListener('load', animateSections);
 
-
-
-
-
-
-<div class="good-news">
-    <h2>Good News Articles</h2>
-    <ul>
-        <li>
-            <a href="https://www.sciencedaily.com/releases/2023/03/230316094153.htm" target="_blank">
-                <img src="https://www.sciencedaily.com/images/2023/03/230316094153_1_900x600.jpg" alt="Sustainable Energy">
-                Scientists Develop Sustainable Energy Source from Waste
-            </a>
-        </li>
-        <li>
-            <a href="https://www.worldbank.org/en/news/press-release/2023/04/27/global-poverty-rate-declines" target="_blank">
-                <img src="https://www.worldbank.org/content/dam/photos/2023/Apr/global-poverty-rate-declines.jpg" alt="Poverty Rate">
-                Global Poverty Rate Declines
-            </a>
-        </li>
-        <li>
-            <a href="https://www.nationalgeographic.com/environment/article/california-condor-comeback" target="_blank">
-                <img src="https://www.nationalgeographic.com/content/dam/ngdotcom/rights-exempt/2023/03/california-condor-comeback/01-california-condor.jpg" alt="California Condor">
-                Endangered Species, the California Condor, Makes Remarkable Comeback
-            </a>
-        </li>
-        <li>
-            <a href="https://www.cancer.gov/news-events/cancer-currents-blog/2023/04/immunotherapy-patient-response" target="_blank">
-                <img src="https://www.cancer.gov/images/cancer-currents/blog/2023/04/immunotherapy.jpg" alt="Cancer Treatment">
-                Breakthrough in Cancer Treatment Shows Promising Results
-            </a>
-        </li>
-        <li>
-            <a href="https://www.unicef.org/stories/water-sanitation-and-hygiene" target="_blank">
-                <img src="https://www.unicef.org/sites/default/files/styles/media_library_large/public/2023-04/unicef-water-sanitation-hero.jpg" alt="Clean Water">
-                Community Project Provides Clean Water to Rural Areas
-            </a>
-        </li>
-        <li>
-            <a href="https://www.forbes.com/sites/forbestechcouncil/2023/01/31/new-technology-aims-to-reduce-food-waste-in-restaurants/?sh=5a7c5d3d2bb2" target="_blank">
-                <img src="https://www.forbes.com/static/images/forbes-logo-2016.png" alt="Food Waste">
-                New Technology Helps Reduce Food Waste
-            </a>
-        </li>
-        <li>
-            <a href="https://www.un.org/en/climatechange" target="_blank">
-                <img src="https://www.un.org/sites/un2.un.org/files/styles/full_width/public/2023-03/UN.jpg" alt="Environmental Breakthroughs">
-                International Cooperation Leads to Environmental Breakthroughs
-            </a>
-        </li>
-        <li>
-            <a href="https://www.edweek.org/teaching-learning/innovative-education-programs-boost-student-success/2023/05" target="_blank">
-                <img src="https://www.edweek.org/assets/img/edweek/education.jpg" alt="Education Success">
-                Innovative Education Programs Boost Student Success
-            </a>
-        </li>
-        <li>
-            <a href="https://www.theguardian.com/us-news/2023/feb/14/us-cities-invest-green-transportation" target="_blank">
-                <img src="https://i.guim.co.uk/img/media/cf8996b3efb54eaaa93546c300f9a40b8daec6bb/0_0_2624_1749/2624.jpg" alt="Green Transportation">
-                Major Cities Invest in Green Public Transportation
-            </a>
-        </li>
-        <li>
-            <a href="https://www.wwf.org.uk/updates/global-tree-planting-initiative" target="_blank">
-                <img src="https://www.wwf.org.uk/sites/default/files/styles/media_crop/public/2023-04/tree-planting.jpg" alt="Tree Planting">
-                Global Tree Planting Initiative Reaches New Milestones
-            </a>
-        </li>
-    </ul>
-</div>
-
-
-
-        
-
-
-        
-        
-
-        // Animate sections on scroll
-        function animateSections() {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                const sectionTop = section.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-                if (sectionTop < windowHeight * 0.75) {
-                    section.classList.add('visible');
-                }
-            });
-        }
-
-        window.addEventListener('scroll', animateSections);
-        window.addEventListener('load', animateSections);
         
 
         // Email button animation and functionality
