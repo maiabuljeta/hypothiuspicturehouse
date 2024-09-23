@@ -35,9 +35,15 @@
             animation: gradient 15s ease infinite;
         }
         @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
         nav {
             background-color: rgba(51, 51, 51, 0.8);
@@ -76,6 +82,30 @@
         nav ul li a:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(51, 51, 51, 0.9);
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #fff;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        .dropdown-content a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
         #good-news {
             background-color: rgba(34, 34, 34, 0.6);
             padding: 30px;
@@ -86,20 +116,20 @@
             position: relative;
             overflow: hidden;
         }
+        #good-news::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/api/placeholder/800/400') center/cover no-repeat;
+            opacity: 0.2;
+            z-index: -1;
+        }
         #good-news:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-        }
-        .article {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        .article img {
-            width: 100px;
-            height: auto;
-            margin-right: 15px;
-            border-radius: 8px;
         }
         #email-button {
             display: inline-block;
@@ -116,9 +146,94 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+        #email-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+        }
+        .section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #cursor-glow {
+            position: fixed;
+            pointer-events: none;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        #news-article {
+            background-color: rgba(34, 34, 34, 0.6);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        #news-article:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+        #news-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+        #news-content {
+            flex: 1;
+        }
+        #news-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        #news-link {
+            color: #00ffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        #news-link:hover {
+            color: #ff00ff;
+        }
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+            nav ul li {
+                margin: 5px 0;
+            }
+            .dropdown-content {
+                position: static;
+                display: none;
+                width: 100%;
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+            #news-article {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #news-image {
+                width: 100%;
+                height: 200px;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="cursor-glow"></div>
     <div class="container">
         <h1 id="main-title">HYPOTHIUS PICTUREHOUSE</h1>
         <nav>
@@ -127,46 +242,94 @@
                 <li><a href="https://discord.gg/V5cwEAa9h5">COMMUNITY</a></li>
                 <li><a href="https://open.spotify.com/show/48mowLvfVjOyrTPmTPw34c">PODCAST</a></li>
                 <li><a href="https://hypothiusnews.beehiiv.com/">HYPOTHIUS NEWS</a></li>
-                <li><a href="#contact">CONTACT</a></li>
+                <li class="dropdown">
+                    <a href="#">TUTORIALS</a>
+                    <div class="dropdown-content">
+                        <a href="https://www.youtube.com/watch?v=UvmsJamKm8o&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=4&t=2540s">PHOTOSHOP COURSE</a>
+                        <a href="https://youtu.be/57vRTEwjH7w?si=LZJ1ZnvEhjRxO6Dy">CANVA TUTORIAL</a>
+                        <a href="https://www.youtube.com/watch?v=2yZLiT4bjBI&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=2&t=630s">CAPCUT TUTORIAL</a>
+                        <a href="https://www.facebook.com/share/Px5tMFnSkH7tW8o6/">ADOBE CREATIVE CLOUD EBOOK (PAID)</a>
+                        <a href="https://mcusercontent.com/237a1a39cec38eb438a2131c1/files/f7d7a509-d2b6-6660-b968-083efb555774/Film_Resource_Sheets.pdf">NO-BUDGET FILMMAKING GUIDE</a>
+                        <a href="https://www.youtube.com/playlist?list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT">MORE TUTORIALS</a>
+                    </div>
+                </li>
+                <li><a href="https://noplacelikeome.com/">CLOTHING</a></li>
+                <li class="dropdown">
+                    <a href="#">SOFTWARE</a>
+                    <div class="dropdown-content">
+                        <a href="https://mememaker.tiiny.site/?fbclid=IwZXh0bgNhZW0CMTAAAR1CcY6ONcBBoAeXpMAP7h1gOJEIiFpYVZz3DgzaWZljJsR354AvIlRt1fs_aem_bGfqyWgXzBVUbJkdevGNLQ">FREE MOVIE SCHEDULING SOFTWARE</a>
+                        <a href="https://mememaker.tiiny.site/?fbclid=IwZXh0bgNhZW0CMTAAAR1CcY6ONcBBoAeXpMAP7h1gOJEIiFpYVZz3DgzaWZljJsR354AvIlRt1fs_aem_bGfqyWgXzBVUbJkdevGNLQ">WATERMARK-FREE MEME CREATOR</a>
+                    </div>
+                </li>
             </ul>
         </nav>
-        <div id="good-news">
-            <h2>Good News</h2>
-            <div id="news-content">Loading news...</div>
+        
+        <div id="good-news" class="section">
+            <h2>GOOD NEWS</h2>
+            <div id="news-article">
+                <img id="news-image" src="/api/placeholder/150/150" alt="News Image">
+                <div id="news-content">
+                    <h3 id="news-title">Loading news...</h3>
+                    <a id="news-link" href="#" target="_blank">Read more</a>
+                </div>
+            </div>
         </div>
-        <button id="email-button" onclick="window.location.href='mailto:youremail@example.com'">Email Us</button>
+
+        <div id="about" class="section">
+            <h2>ABOUT HYPOTHIUS PICTUREHOUSE</h2>
+            <p>Hypothius Picturehouse, founded by Maia Buljeta, is a production company focused on creating transformative change by blending entertainment with real-world impact. The company's mission revolves around using storytelling to inspire and empower socially conscious innovators. Through its projects, Hypothius Picturehouse seeks to push boundaries and highlight pressing global issues, delivering content that is both thought-provoking and meaningful.</p>
+            <p>The company's approach to film and media production emphasizes sustainability and social responsibility. Hypothius Picturehouse is committed to creating a lasting influence by building sustainable futures. This focus goes beyond entertainment, as it seeks to directly contribute to real-world solutions and advocate for environmental and social causes through its creative work.</p>
+            <p>Driven by a visionary leadership style, Hypothius Picturehouse is not just a typical film production company but a platform for transformative storytelling. It aims to shape culture and society by merging creative narratives with a purpose, establishing a new standard for media that goes beyond passive consumption to engage audiences in the change they wish to see in the world.</p>
+        </div>
+
+        <button id="email-button">
+            ✉ CONTACT US
+        </button>
     </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // GSAP animation for title
-            gsap.from("#main-title", { duration: 1, y: -50, opacity: 0, stagger: 0.1 });
+        const apiKey = '51fef0c7d39f44dc9fe08081e964e269';
+        const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&category=technology&apiKey=${apiKey}`;
 
-            // Fetch good news
-            const newsContent = document.getElementById('news-content');
-
-            fetch('https://newsapi.org/v2/top-headlines?country=us&category=good-news&apiKey=YOUR_API_KEY_HERE')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.articles && data.articles.length > 0) {
-                        newsContent.innerHTML = data.articles.map(article => `
-                            <div class="article">
-                                <img src="${article.urlToImage || 'https://via.placeholder.com/100'}" alt="${article.title}">
-                                <div>
-                                    <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-                                    <p>${article.description || ''}</p>
-                                </div>
-                            </div>
-                        `).join('');
-                    } else {
-                        newsContent.innerHTML = 'No good news found.';
+        async function fetchNews() {
+            try {
+                const response = await fetch(newsUrl, {
+                    headers: {
+                        'X-Api-Key': apiKey
                     }
-                })
-                .catch(error => {
-                    console.error('Error fetching news:', error);
-                    newsContent.innerHTML = 'Failed to load good news.';
                 });
-        });
-    </script>
-</body>
-</html>
+                const data = await response.json();
+                if (data.articles && data.articles.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * data.articles.length);
+                    const article = data.articles[randomIndex];
+                    updateNewsArticle(article);
+                }
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        }
 
+        function updateNewsArticle(article) {
+            const newsImage = document.getElementById('news-image');
+            const newsTitle = document.getElementById('news-title');
+            const newsLink = document.getElementById('news-link');
+
+            newsImage.src = article.urlToImage || '/api/placeholder/150/150';
+            newsImage.alt = article.title;
+            newsTitle.textContent = article.title;
+            newsLink.href = article.url;
+
+            gsap.from("#news-article", {opacity: 0, y: 20, duration: 1, ease: "power3.out"});
+        }
+
+        // Fetch news every 5 minutes
+        fetchNews();
+        setInterval(fetchNews, 300000);
+
+        // Animate sections on scroll
+        function animateSections() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                if (sectionTop < windowHeight * 0.75) {
