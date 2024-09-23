@@ -237,28 +237,64 @@
         </button>
     </div>
 
-    <script>
-        // Simulated good news data (replace with actual API call or data source)
-        const goodNews = [
-            "Scientists develop new sustainable energy source",
-            "Global poverty rates reach historic low",
-            "Endangered species makes remarkable comeback",
-            "Breakthrough in cancer treatment shows promising results",
-            "Community project provides clean water to remote village"
-        ];
+    <div id="news-content"></div>
 
-        function updateGoodNews() {
-            const newsElement = document.getElementById('news-content');
-            const randomNews = goodNews[Math.floor(Math.random() * goodNews.length)];
-            gsap.to(newsElement, {opacity: 0, duration: 0.5, onComplete: () => {
-                newsElement.textContent = randomNews;
-                gsap.to(newsElement, {opacity: 1, duration: 0.5});
-            }});
+<script>
+    // Simulated good news data (replace with actual API call or data source)
+    const goodNews = [
+        {
+            title: "Scientists develop new sustainable energy source",
+            url: "https://www.sciencedaily.com/releases/2023/03/230316094153.htm",
+            img: "https://www.sciencedaily.com/images/2023/03/230316094153_1_900x600.jpg"
+        },
+        {
+            title: "Global poverty rates reach historic low",
+            url: "https://www.worldbank.org/en/news/press-release/2023/04/27/global-poverty-rate-declines",
+            img: "https://www.worldbank.org/content/dam/photos/2023/Apr/global-poverty-rate-declines.jpg"
+        },
+        {
+            title: "Endangered species makes remarkable comeback",
+            url: "https://www.nationalgeographic.com/environment/article/california-condor-comeback",
+            img: "https://www.nationalgeographic.com/content/dam/ngdotcom/rights-exempt/2023/03/california-condor-comeback/01-california-condor.jpg"
+        },
+        {
+            title: "Breakthrough in cancer treatment shows promising results",
+            url: "https://www.cancer.gov/news-events/cancer-currents-blog/2023/04/immunotherapy-patient-response",
+            img: "https://www.cancer.gov/images/cancer-currents/blog/2023/04/immunotherapy.jpg"
+        },
+        {
+            title: "Community project provides clean water to remote village",
+            url: "https://www.unicef.org/stories/water-sanitation-and-hygiene",
+            img: "https://www.unicef.org/sites/default/files/styles/media_library_large/public/2023-04/unicef-water-sanitation-hero.jpg"
         }
+        // Add more articles as needed
+    ];
 
-        // Update news every 10 seconds
-        updateGoodNews();
-        setInterval(updateGoodNews, 10000);
+    function updateGoodNews() {
+        const newsElement = document.getElementById('news-content');
+        const randomNews = goodNews[Math.floor(Math.random() * goodNews.length)];
+        newsElement.innerHTML = `
+            <a href="${randomNews.url}" target="_blank">
+                <img src="${randomNews.img}" alt="${randomNews.title}" style="max-width: 100%; height: auto;">
+                ${randomNews.title}
+            </a>
+        `;
+        gsap.to(newsElement, {opacity: 0, duration: 0.5, onComplete: () => {
+            newsElement.innerHTML = `
+                <a href="${randomNews.url}" target="_blank">
+                    <img src="${randomNews.img}" alt="${randomNews.title}" style="max-width: 100%; height: auto;">
+                    ${randomNews.title}
+                </a>
+            `;
+            gsap.to(newsElement, {opacity: 1, duration: 0.5});
+        }});
+    }
+
+    // Update news immediately and then every 10 seconds
+    updateGoodNews();
+    setInterval(updateGoodNews, 10000);
+</script>
+
 
         // Animate sections on scroll
         function animateSections() {
