@@ -35,81 +35,243 @@
             animation: gradient 15s ease infinite;
         }
         @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
         nav {
-            text-align: center;
-            margin-bottom: 30px;
+            background-color: rgba(51, 51, 51, 0.8);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            margin-bottom: 20px;
         }
-        nav a {
-            font-size: 1.5em;
-            color: #fff;
-            text-decoration: none;
-            margin: 0 15px;
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 5px;
             position: relative;
         }
-        nav a::after {
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            border-radius: 25px;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(51, 51, 51, 0.9);
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #fff;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        .dropdown-content a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        #good-news {
+            background-color: rgba(34, 34, 34, 0.6);
+            padding: 30px;
+            margin-top: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #good-news::before {
             content: '';
             position: absolute;
-            width: 100%;
-            height: 2px;
-            background-color: #fff;
+            top: 0;
             left: 0;
-            bottom: -5px;
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s ease;
+            right: 0;
+            bottom: 0;
+            background: url('/api/placeholder/800/400') center/cover no-repeat;
+            opacity: 0.2;
+            z-index: -1;
         }
-        nav a:hover::after {
-            transform: scaleX(1);
-            transform-origin: left;
+        #good-news:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        #email-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            margin-top: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #email-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
         }
         .section {
-            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
         }
-        .section p {
-            font-size: 1.2em;
-            line-height: 1.6;
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #cursor-glow {
+            position: fixed;
+            pointer-events: none;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+            nav ul li {
+                margin: 5px 0;
+            }
+            .dropdown-content {
+                position: static;
+                display: none;
+                width: 100%;
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="cursor-glow"></div>
     <div class="container">
-        <h1>Hypothius Picturehouse</h1>
+        <h1 id="main-title">HYPOTHIUS PICTUREHOUSE</h1>
         <nav>
-            <a href="#films">FILMS</a>
-            <a href="#clothes">CLOTHES</a>
-            <a href="#events">EVENTS</a>
-            <a href="#contact">CONTACT</a>
+            <ul>
+                <li><a href="#home">HOME</a></li>
+                <li><a href="https://discord.gg/V5cwEAa9h5">COMMUNITY</a></li>
+                <li><a href="https://open.spotify.com/show/48mowLvfVjOyrTPmTPw34c">PODCAST</a></li>
+                <li><a href="https://hypothiusnews.beehiiv.com/">HYPOTHIUS NEWS</a></li>
+                <li class="dropdown">
+                    <a href="#">TUTORIALS</a>
+                    <div class="dropdown-content">
+                        <a href="https://www.youtube.com/watch?v=UvmsJamKm8o&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=4&t=2540s">PHOTOSHOP COURSE</a>
+                        <a href="https://youtu.be/57vRTEwjH7w?si=LZJ1ZnvEhjRxO6Dy">CANVA TUTORIAL</a>
+                        <a href="https://www.youtube.com/watch?v=2yZLiT4bjBI&list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT&index=2&t=630s">CAPCUT TUTORIAL</a>
+                        <a href="https://www.facebook.com/share/Px5tMFnSkH7tW8o6/">ADOBE CREATIVE CLOUD EBOOK (PAID)</a>
+                        <a href="https://mcusercontent.com/237a1a39cec38eb438a2131c1/files/f7d7a509-d2b6-6660-b968-083efb555774/Film_Resource_Sheets.pdf">NO-BUDGET FILMMAKING GUIDE</a>
+                        <a href="https://www.youtube.com/playlist?list=PLwRNg6-bTwoRtzDN4cUpDtGtWQW_pP_vT">MORE TUTORIALS</a>
+                    </div>
+                </li>
+                <li><a href="https://noplacelikeome.com/">CLOTHING</a></li>
+                <li class="dropdown">
+                    <a href="#">SOFTWARE</a>
+                    <div class="dropdown-content">
+                        <a href="https://mememaker.tiiny.site/?fbclid=IwZXh0bgNhZW0CMTAAAR1CcY6ONcBBoAeXpMAP7h1gOJEIiFpYVZz3DgzaWZljJsR354AvIlRt1fs_aem_bGfqyWgXzBVUbJkdevGNLQ">FREE MOVIE SCHEDULING SOFTWARE</a>
+                        <a href="https://mememaker.tiiny.site/?fbclid=IwZXh0bgNhZW0CMTAAAR1CcY6ONcBBoAeXpMAP7h1gOJEIiFpYVZz3DgzaWZljJsR354AvIlRt1fs_aem_bGfqyWgXzBVUbJkdevGNLQ">WATERMARK-FREE MEME CREATOR</a>
+                        <a href="https://maiabuljeta.github.io/onesheetcreator/">FILM ONE-SHEET CREATOR</a>
+                    </div>
+                </li>
+                <li><a href="https://www.amazon.com/dp/B0DHRHN5BL/ref=sr_1_2?crid=3AOTLGXDGAK79&dib=eyJ2IjoiMSJ9.dTN2eSmhUK-bG7_r4FIO3K075qUTPyZPKurnZIn9Drc.XGU0zI2JDqGoU6ANBvolR8XT51pB2pqD9UAmVh4bgeQ&dib_tag=se&keywords=maia+buljeta&qid=1727090126&sprefix=maia+buljeta%2Caps%2C96&sr=8-2">BOOK</a></li>
+            </ul>
         </nav>
         
-        <section id="about" class="section">
-            <p>
-                Welcome to Hypothius Picturehouse, where we believe that entertainment can be a powerful vehicle for real-world impact. Our mission is to inspire transformative change by combining storytelling with actionable solutions that empower socially conscious innovators. Through films, events, and creative merchandise, we are committed to building a sustainable future, fostering community engagement, and making a difference in the world.
-            </p>
-        </section>
+        <div id="about" class="section">
+            <h2>ABOUT HYPOTHIUS PICTUREHOUSE</h2>
+            <p>Hypothius Picturehouse, founded by Maia Buljeta, is a production company focused on creating transformative change by blending entertainment with real-world impact. The company's mission revolves around using storytelling to inspire and empower socially conscious innovators. Through its projects, Hypothius Picturehouse seeks to push boundaries and highlight pressing global issues, delivering content that is both thought-provoking and meaningful.</p>
+            <p>The company's approach to film and media production emphasizes sustainability and social responsibility. Hypothius Picturehouse is committed to creating a lasting influence by building sustainable futures. This focus goes beyond entertainment, as it seeks to directly contribute to real-world solutions and advocate for environmental and social causes through its creative work.</p>
+            <p>Driven by a visionary leadership style, Hypothius Picturehouse is not just a typical film production company but a platform for transformative storytelling. It aims to shape culture and society by merging creative narratives with a purpose, establishing a new standard for media that goes beyond passive consumption to engage audiences in the change they wish to see in the world.</p>
+        </div>
 
-        <section id="films" class="section">
-            <h2>Films</h2>
-            <p>Explore our catalog of transformative films that challenge the status quo and inspire innovation and change.</p>
-        </section>
-
-        <section id="clothes" class="section">
-            <h2>Clothes</h2>
-            <p>Discover our line of creative, impactful clothing designed to inspire boldness and creativity in your everyday life.</p>
-        </section>
-
-        <section id="events" class="section">
-            <h2>Events</h2>
-            <p>Join us at events that bring together changemakers, storytellers, and innovators to create lasting impact through collaboration.</p>
-        </section>
-
-        <section id="contact" class="section">
-            <h2>Contact Us</h2>
-            <p>Get in touch to learn more about our mission, collaborate on projects, or attend our upcoming events.</p>
-        </section>
+        <button id="email-button">
+            ✉ CONTACT US
+        </button>
     </div>
+
+    <script>
+        // Email button animation and functionality
+        const emailButton = document.getElementById('email-button');
+        emailButton.addEventListener('mouseover', () => {
+            gsap.to(emailButton, {scale: 1.1, duration: 0.3});
+        });
+        emailButton.addEventListener('mouseout', () => {
+            gsap.to(emailButton, {scale: 1, duration: 0.3});
+        });
+        emailButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            gsap.to(emailButton, {scale: 0.9, duration: 0.1, onComplete: () => {
+                gsap.to(emailButton, {scale: 1, duration: 0.1, onComplete: () => {
+                    window.location.href = "mailto:maiabuljeta@gmail.com";
+                }});
+            }});
+        });
+
+        // Initial animations
+        gsap.from("h1", {opacity: 0, y: -50, duration: 1, ease: "power3.out"});
+        gsap.from("nav", {opacity: 0, y: -20, duration: 1, delay: 0.5, ease: "power3.out"});
+
+        // Cursor glow effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursorGlow, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    </script>
 </body>
 </html>
+
+
+
+
+
+
+
