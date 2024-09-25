@@ -217,14 +217,10 @@
                         <a href="https://maiabuljeta.github.io/onesheetcreator/">FILM ONE-SHEET CREATOR</a>
                     </div>
                 </li>
+                         <a href="https://www.amazon.com/dp/B0DHRHN5BL/ref=sr_1_2?crid=3AOTLGXDGAK79&dib=eyJ2IjoiMSJ9.dTN2eSmhUK-bG7_r4FIO3K075qUTPyZPKurnZIn9Drc.XGU0zI2JDqGoU6ANBvolR8XT51pB2pqD9UAmVh4bgeQ&dib_tag=se&keywords=maia+buljeta&qid=1727090126&sprefix=maia+buljeta%2Caps%2C96&sr=8-2">BOOK</a>
             </ul>
         </nav>
         
-        <div id="good-news" class="section">
-            <h2>GOOD NEWS</h2>
-            <p id="news-content">Loading good news...</p>
-        </div>
-
         <div id="about" class="section">
             <h2>ABOUT HYPOTHIUS PICTUREHOUSE</h2>
             <p>Hypothius Picturehouse, founded by Maia Buljeta, is a production company focused on creating transformative change by blending entertainment with real-world impact. The company's mission revolves around using storytelling to inspire and empower socially conscious innovators. Through its projects, Hypothius Picturehouse seeks to push boundaries and highlight pressing global issues, delivering content that is both thought-provoking and meaningful.</p>
@@ -236,53 +232,6 @@
             ✉ CONTACT US
         </button>
     </div>
-
-    <script>
- // Simulated good news data (replace with actual API call or data source)
-const goodNews = [
-    {
-        title: "SEPTEMBER 18th: Thrifty couple choose a charity shop for their ‘shiny, sustainable wedding’",
-        url: "https://www.positive.news/society/couple-married-uk-first-charity-shop-sustainable-wedding/",
-        image: "https://www.positive.news/wp-content/uploads/2024/09/Nina-and-Stefan-get-married-in-the-Emmaus-charity-shop-Image-credit-Zuza-Grubecka-1-scaled-1800x0-c-center.jpg"
-    },
-    {
-        title: "SEPTEMBER 21st: New $1 Test Using Origami Paper Sensors Can Detect Infectious Diseases Like Covid–With Just a Mobile Phone",
-        url: "https://example.com/endangered-species",
-        image: "https://example.com/images/endangered-species.jpg"
-    },
-    {
-        title: "SEPTEMBER 19th: UPS Driver Saves Collapsed Grandmother, Then Brings Her Treats Every Week to Hospital: ‘She’s Family Now’",
-        url: "https://www.goodnewsnetwork.org/ups-hero-driver-saves-georgia-grandmother-truly-an-angel-to-our-family/",
-        image: "https://www.goodnewsnetwork.org/wp-content/uploads/2024/09/Raheem-Cooper-visits-Marie-Coble-in-hospital-family-photo.jpg"
-    },
-    {
-        title: "SEPTEMBER 20th: Scottish Woman Scatters Bracelets Randomly All Over City to Make Locals Smile",
-        url: "https://www.goodnewsnetwork.org/scottish-woman-scatters-bracelets-randomly-all-over-city-to-make-locals-smile/",
-        image: "https://www.goodnewsnetwork.org/wp-content/uploads/2024/09/credit-Beth-McNeill-released-to-the-media-e1726821064760.jpg"
-    }
-];
-
-function updateGoodNews() {
-    const newsElement = document.getElementById('news-content');
-    const randomNews = goodNews[Math.floor(Math.random() * goodNews.length)];
-    
-    // Create the new content
-    const newsHtml = `
-        <a href="${randomNews.url}" target="_blank">
-            <h2>${randomNews.title}</h2>
-            <img src="${randomNews.image}" alt="${randomNews.title}" style="width: 100%; height: auto;">
-        </a>
-    `;
-    
-    gsap.to(newsElement, { opacity: 0, duration: 0.5, onComplete: () => {
-        newsElement.innerHTML = newsHtml;
-        gsap.to(newsElement, { opacity: 1, duration: 0.5 });
-    }});
-}
-
-// Update news every 10 seconds
-updateGoodNews();
-setInterval(updateGoodNews, 10000);
 
 // Animate sections on scroll
 function animateSections() {
