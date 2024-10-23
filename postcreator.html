@@ -81,14 +81,25 @@
             width: 90%;
             max-width: 90%; /* Limit width */
             transition: all 0.3s ease;
-            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5),
-                         4px 4px 0 rgba(0, 0, 0, 0.3), 
-                         6px 6px 0 rgba(0, 0, 0, 0.2); /* Enhanced 3D text shadow */
             padding: 10px;
             border-radius: 8px;
             border: 2px solid transparent;
             overflow-wrap: break-word; /* Allow text to wrap */
+            font-size: 40px; /* Base font size */
         }
+
+        /* 3D Text Layers */
+        .text-layer span {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .text-layer .layer-1 { color: #000; transform: translate(4px, 4px); }
+        .text-layer .layer-2 { color: #555; transform: translate(2px, 2px); }
+        .text-layer .layer-3 { color: #aaa; transform: translate(0px, 0px); }
+        .text-layer .layer-4 { color: #fff; }
 
         button {
             background: #0095f6;
@@ -195,7 +206,12 @@
 
         <div class="canvas-container">
             <div id="post-canvas">
-                <div class="text-layer" id="text-layer">Your amazing caption here</div>
+                <div class="text-layer" id="text-layer">
+                    <span class="layer-1">Your amazing caption here</span>
+                    <span class="layer-2">Your amazing caption here</span>
+                    <span class="layer-3">Your amazing caption here</span>
+                    <span class="layer-4">Your amazing caption here</span>
+                </div>
             </div>
         </div>
     </div>
@@ -208,9 +224,17 @@
         let currentColor = '#333333';
 
         textInput.addEventListener('input', (e) => {
-            textLayer.innerText = e.target.value;
+            const text = e.target.value;
+            updateTextLayers(text); // Update the text layers
             adjustTextSize(); // Call to adjust text size based on content
         });
+
+        function updateTextLayers(text) {
+            const layers = textLayer.querySelectorAll('span');
+            layers.forEach(layer => {
+                layer.innerText = text; // Update each layer with the new text
+            });
+        }
 
         function updateStyle() {
             textLayer.style.fontFamily = fontSelect.value;
@@ -220,27 +244,29 @@
             adjustTextSize(); // Adjust text size when style is updated
         }
 
-        function adjustTextSize() {
-            const canvasWidth = document.getElementById('post-canvas').clientWidth;
-            let textWidth = textLayer.offsetWidth;
-
-            while (textWidth > canvasWidth * 0.9) { // Adjust text size if it exceeds 90% of canvas width
-                const currentFontSize = parseInt(window.getComputedStyle(textLayer).fontSize);
-                textLayer.style.fontSize = `${currentFontSize - 1}px`; // Decrease font size
-                textWidth = textLayer.offsetWidth; // Update text width
-            }
-        }
-
         function setColor(color) {
             currentColor = color;
-            updateStyle();
+            updateStyle(); // Update the text color in the style function
         }
 
-        function applyTemplate(type) {
-            const canvas = document.getElementById('post-canvas');
-            const textLayer = document.getElementById('text-layer');
+        function adjustTextSize() {
+            const text = textInput.value;
+            const maxWidth = textLayer.clientWidth;
+            const textSize = parseInt(sizeSlider.value);
 
-            switch(type) {
+            // Limit text size based on max width
+            if (text.length > 20 && textSize > 20) {
+                sizeSlider.value = 20; // Set to minimum if too long
+            } else if (text.length > 30 && textSize > 40) {
+                sizeSlider.value = 40; // Keep within size limits
+            } else if (text.length > 40 && textSize > 30) {
+                sizeSlider.value = 30; // Adjust further if too long
+            }
+            updateStyle(); // Call to update style after adjusting size
+        }
+
+        function applyTemplate(template) {
+            switch (template) {
                 case 'minimal':
                     canvas.style.background = '#e8f0fe';
                     textLayer.style.fontWeight = 'normal';
@@ -271,3 +297,4 @@
     </script>
 </body>
 </html>
+
