@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>InstantPost - Quick Instagram Post Creator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            margin: 0 auto;
+        }
+
+        #post-canvas {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .text-layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background: #0095f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0081d6;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .template {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template:hover {
+            border-color: #0095f6;
+            transform: translateY(-2px);
+        }
+
+        .color-picker {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="control-group">
+                <label>Quick Templates</label>
+                <div class="template-grid">
+                    <div class="template" onclick="applyTemplate('minimal')">Minimal</div>
+                    <div class="template" onclick="applyTemplate('bold')">Bold</div>
+                    <div class="template" onclick="applyTemplate('gradient')">Gradient</div>
+                    <div class="template" onclick="applyTemplate('quote')">Quote</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Text Content</label>
+                <textarea id="text-input" rows="4" placeholder="Enter your text here...">Your amazing caption here</textarea>
+            </div>
+
+            <div class="control-group">
+                <label>Font Style</label>
+                <select id="font-select" onchange="updateStyle()">
+                    <option value="'Segoe UI'">Modern</option>
+                    <option value="Georgia">Classic</option>
+                    <option value="'Arial Black'">Bold</option>
+                    <option value="'Brush Script MT'">Script</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Colors</label>
+                <div class="color-picker">
+                    <div class="color-swatch" style="background: #ff6b6b" onclick="setColor('#ff6b6b')"></div>
+                    <div class="color-swatch" style="background: #4ecdc4" onclick="setColor('#4ecdc4')"></div>
+                    <div class="color-swatch" style="background: #45b7d1" onclick="setColor('#45b7d1')"></div>
+                    <div class="color-swatch" style="background: #96ceb4" onclick="setColor('#96ceb4')"></div>
+                    <div class="color-swatch" style="background: #d4a5a5" onclick="setColor('#d4a5a5')"></div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Text Size</label>
+                <input type="range" min="20" max="80" value="40" id="size-slider" onchange="updateStyle()">
+            </div>
+
+            <button onclick="downloadPost()" style="width: 100%; margin-top: 20px;">Download Post</button>
+        </div>
+
+        <div class="canvas-container">
+            <div id="post-canvas">
+                <div class="text-layer" id="text-layer">Your amazing caption here</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const textLayer = document.getElementById('text-layer');
+        const fontSelect = document.getElementById('font-select');
+        const sizeSlider = document.getElementById('size-slider');
+        let currentColor = '#333333';
+
+        textInput.addEventListener('input', (e) => {
+            textLayer.innerText = e.target.value;
+        });
+
+        function updateStyle() {
+            textLayer.style.fontFamily = fontSelect.value;
+            textLayer.style.fontSize = `${sizeSlider.value}px`;
+            textLayer.style.color = currentColor;
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            updateStyle();
+        }
+
+        function applyTemplate(type) {
+            const canvas = document.getElementById('post-canvas');
+            const textLayer = document.getElementById('text-layer');
+
+            switch(type) {
+                case 'minimal':
+                    canvas.style.background = '#ffffff';
+                    textLayer.style.color = '#333333';
+                    textLayer.style.fontFamily = "'Segoe UI'";
+                    break;
+                case 'bold':
+                    canvas.style.background = '#000000';
+                    textLayer.style.color = '#ffffff';
+                    textLayer.style.fontFamily = "'Arial Black'";
+                    textLayer.style.letterSpacing = '2px';
+                    break;
+                case 'gradient':
+                    canvas.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
+                    textLayer.style.color = '#ffffff';
+                    textLayer.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
+                    break;
+                case 'quote':
+                    canvas.style.background = '#f8f9fa';
+                    textLayer.style.color = '#333333';
+                    textLayer.style.fontFamily = 'Georgia';
+                    textLayer.style.fontStyle = 'italic';
+                    textInput.value = '"' + textInput.value + '"';
+                    textLayer.innerText = textInput.value;
+                    break;
+            }
+        }
+
+        async function downloadPost() {
+            const canvas = document.getElementById('post-canvas');
+            try {
+                const capturedCanvas = await html2canvas(canvas);
+                const link = document.createElement('a');
+                link.download = 'instagram-post.png';
+                link.href = capturedCanvas.toDataURL();
+                link.click();
+            } catch (error) {
+                console.error('Error generating image:', error);
+                alert('There was an error generating your image. Please try again.');
+            }
+        }
+
+        // Initialize with default styles
+        updateStyle();
+    </script>
+</body>
+</html>
