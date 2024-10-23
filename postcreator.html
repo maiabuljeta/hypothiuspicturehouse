@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InstantPost - Quick Instagram Post Creator</title>
-    <!-- Corrected the script tags by separating GSAP and html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
         }
 
         .app-container {
@@ -27,7 +27,7 @@
             background: white;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .sidebar {
@@ -67,7 +67,7 @@
             height: 100%;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
             position: relative;
         }
@@ -136,181 +136,133 @@
         .color-swatch:hover {
             transform: scale(1.1);
         }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            color: #fff;
-            overflow-x: hidden;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 4em;
-            text-align: center;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            background-image: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #ffff00, #00ff00);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-        }
-
-        @keyframes gradient {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        nav {
-            background-color: rgba(51, 51, 51, 0.8);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            margin-bottom: 20px;
-        }
-
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            text-align: center;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        nav ul li {
-            margin: 5px;
-            position: relative;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 15px;
-            transition: all 0.3s ease;
-            border-radius: 25px;
-            text-transform: uppercase;
-            font-size: 0.9em;
-            letter-spacing: 1px;
-            display: inline-block;
-        }
-
-        nav ul li a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: rgba(51, 51, 51, 0.9);
-            min-width: 200px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .dropdown-content a {
-            color: #fff;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-content a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        #good-news {
-            background-color: rgba(34, 34, 34, 0.6);
-            padding: 30px;
-            margin-top: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #good-news::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('/api/placeholder/800/400') center/cover no-repeat;
-            opacity: 0.2;
-            z-index: -1;
-        }
-
-        #good-news:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        #email-button {
-            display: inline-block;
-            background: linear-gradient(45deg, #ff00ff, #00ffff);
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 50px;
-            margin-top: 30px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #email-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
-        }
-
-        .section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
     </style>
 </head>
 <body>
-    <!-- Content goes here -->
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="control-group">
+                <label>Quick Templates</label>
+                <div class="template-grid">
+                    <div class="template" onclick="applyTemplate('minimal')">Minimal</div>
+                    <div class="template" onclick="applyTemplate('bold')">Bold</div>
+                    <div class="template" onclick="applyTemplate('gradient')">Gradient</div>
+                    <div class="template" onclick="applyTemplate('quote')">Quote</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Text Content</label>
+                <textarea id="text-input" rows="4" placeholder="Enter your text here...">Your amazing caption here</textarea>
+            </div>
+
+            <div class="control-group">
+                <label>Font Style</label>
+                <select id="font-select" onchange="updateStyle()">
+                    <option value="'Segoe UI'">Modern</option>
+                    <option value="Georgia">Classic</option>
+                    <option value="'Arial Black'">Bold</option>
+                    <option value="'Brush Script MT'">Script</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Colors</label>
+                <div class="color-picker">
+                    <div class="color-swatch" style="background: #ff6b6b" onclick="setColor('#ff6b6b')"></div>
+                    <div class="color-swatch" style="background: #4ecdc4" onclick="setColor('#4ecdc4')"></div>
+                    <div class="color-swatch" style="background: #45b7d1" onclick="setColor('#45b7d1')"></div>
+                    <div class="color-swatch" style="background: #96ceb4" onclick="setColor('#96ceb4')"></div>
+                    <div class="color-swatch" style="background: #d4a5a5" onclick="setColor('#d4a5a5')"></div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Text Size</label>
+                <input type="range" min="20" max="80" value="40" id="size-slider" onchange="updateStyle()">
+            </div>
+
+            <button onclick="downloadPost()" style="width: 100%; margin-top: 20px;">Download Post</button>
+        </div>
+
+        <div class="canvas-container">
+            <div id="post-canvas">
+                <div class="text-layer" id="text-layer">Your amazing caption here</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const textLayer = document.getElementById('text-layer');
+        const fontSelect = document.getElementById('font-select');
+        const sizeSlider = document.getElementById('size-slider');
+        let currentColor = '#333333';
+
+        textInput.addEventListener('input', (e) => {
+            textLayer.innerText = e.target.value;
+        });
+
+        function updateStyle() {
+            textLayer.style.fontFamily = fontSelect.value;
+            textLayer.style.fontSize = `${sizeSlider.value}px`;
+            textLayer.style.color = currentColor;
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            updateStyle();
+        }
+
+        function applyTemplate(type) {
+            const canvas = document.getElementById('post-canvas');
+            const textLayer = document.getElementById('text-layer');
+
+            switch(type) {
+                case 'minimal':
+                    canvas.style.background = '#ffffff';
+                    textLayer.style.color = '#333333';
+                    textLayer.style.fontFamily = "'Segoe UI'";
+                    break;
+                case 'bold':
+                    canvas.style.background = '#000000';
+                    textLayer.style.color = '#ffffff';
+                    textLayer.style.fontFamily = "'Arial Black'";
+                    textLayer.style.letterSpacing = '2px';
+                    break;
+                case 'gradient':
+                    canvas.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
+                    textLayer.style.color = '#ffffff';
+                    textLayer.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
+                    break;
+                case 'quote':
+                    canvas.style.background = '#f8f9fa';
+                    textLayer.style.color = '#333333';
+                    textLayer.style.fontFamily = 'Georgia';
+                    textLayer.style.fontStyle = 'italic';
+                    textInput.value = '"' + textInput.value + '"';
+                    textLayer.innerText = textInput.value;
+                    break;
+            }
+        }
+
+        async function downloadPost() {
+            const canvas = document.getElementById('post-canvas');
+            try {
+                const capturedCanvas = await html2canvas(canvas);
+                const link = document.createElement('a');
+                link.download = 'instagram-post.png';
+                link.href = capturedCanvas.toDataURL();
+                link.click();
+            } catch (error) {
+                console.error('Error generating image:', error);
+                alert('There was an error generating your image. Please try again.');
+            }
+        }
+
+        // Initialize with default styles
+        updateStyle();
+    </script>
 </body>
 </html>
 
