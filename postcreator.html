@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InstantPost - Quick Instagram Post Creator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -28,14 +27,13 @@
             background: white;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
         }
 
         .control-group {
@@ -51,25 +49,17 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             margin-bottom: 10px;
-            transition: border 0.3s ease;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #0095f6;
-            outline: none;
         }
 
         .canvas-container {
             position: relative;
-            width: 100%;
+            width: 600px;
             height: 600px;
             margin: 0 auto;
-            border-radius: 8px;
-            overflow: hidden;
         }
 
         #post-canvas {
@@ -77,9 +67,9 @@
             height: 100%;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            position: relative;
         }
 
         .text-layer {
@@ -90,23 +80,26 @@
             text-align: center;
             width: 80%;
             transition: all 0.3s ease;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5), 
+                         -1px -1px 0 rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid transparent;
         }
 
         button {
             background: #0095f6;
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 16px;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background 0.3s ease;
         }
 
         button:hover {
             background: #0081d6;
-            transform: translateY(-1px);
         }
 
         .template-grid {
@@ -120,15 +113,14 @@
             background: #fff;
             border: 1px solid #ddd;
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-align: center;
         }
 
         .template:hover {
             border-color: #0095f6;
-            transform: scale(1.05);
+            transform: translateY(-2px);
         }
 
         .color-picker {
@@ -144,31 +136,10 @@
             border-radius: 4px;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: transform 0.2s ease;
         }
 
         .color-swatch:hover {
             transform: scale(1.1);
-            border: 2px solid #0095f6;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            background: #ddd;
-            height: 6px;
-            border-radius: 3px;
-            outline: none;
-            margin-bottom: 10px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #0095f6;
-            border-radius: 50%;
-            cursor: pointer;
         }
     </style>
 </head>
@@ -241,6 +212,7 @@
             textLayer.style.fontFamily = fontSelect.value;
             textLayer.style.fontSize = `${sizeSlider.value}px`;
             textLayer.style.color = currentColor;
+            textLayer.style.borderColor = currentColor;
         }
 
         function setColor(color) {
@@ -257,30 +229,32 @@
                     canvas.style.background = '#ffffff';
                     textLayer.style.color = '#333333';
                     textLayer.style.fontFamily = "'Segoe UI'";
+                    textLayer.style.textShadow = '2px 2px 4px rgba(0,0,0,0.2)';
                     break;
                 case 'bold':
                     canvas.style.background = '#000000';
                     textLayer.style.color = '#ffffff';
                     textLayer.style.fontFamily = "'Arial Black'";
                     textLayer.style.letterSpacing = '2px';
+                    textLayer.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5)';
                     break;
                 case 'gradient':
                     canvas.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
                     textLayer.style.color = '#ffffff';
-                    textLayer.style.fontFamily = "'Brush Script MT'";
+                    textLayer.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5)';
                     break;
                 case 'quote':
-                    canvas.style.background = '#ffffff';
-                    textLayer.style.color = '#555555';
+                    canvas.style.background = '#f8f9fa';
+                    textLayer.style.color = '#333333';
                     textLayer.style.fontFamily = 'Georgia';
                     textLayer.style.fontStyle = 'italic';
+                    textLayer.style.textShadow = '1px 1px 3px rgba(0,0,0,0.2)';
                     break;
             }
-            updateStyle();
         }
 
         function downloadPost() {
-            html2canvas(document.getElementById('post-canvas')).then(function(canvas) {
+            html2canvas(document.querySelector("#post-canvas")).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'instagram_post.png';
                 link.href = canvas.toDataURL();
