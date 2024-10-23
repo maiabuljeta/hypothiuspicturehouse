@@ -67,7 +67,7 @@
             height: 100%;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             position: relative;
         }
@@ -78,13 +78,16 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            width: 80%;
+            width: 90%;
+            max-width: 90%; /* Limit width */
             transition: all 0.3s ease;
             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5), 
                          -1px -1px 0 rgba(255, 255, 255, 0.7);
             padding: 10px;
             border-radius: 8px;
             border: 2px solid transparent;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Shadow around text rectangle */
+            overflow-wrap: break-word; /* Allow text to wrap */
         }
 
         button {
@@ -206,13 +209,26 @@
 
         textInput.addEventListener('input', (e) => {
             textLayer.innerText = e.target.value;
+            adjustTextSize(); // Call to adjust text size based on content
         });
 
         function updateStyle() {
             textLayer.style.fontFamily = fontSelect.value;
-            textLayer.style.fontSize = `${sizeSlider.value}px`;
             textLayer.style.color = currentColor;
+            textLayer.style.fontSize = `${sizeSlider.value}px`;
             textLayer.style.borderColor = currentColor;
+            adjustTextSize(); // Adjust text size when style is updated
+        }
+
+        function adjustTextSize() {
+            const canvasWidth = document.getElementById('post-canvas').clientWidth;
+            const textWidth = textLayer.offsetWidth;
+
+            while (textWidth > canvasWidth * 0.9) { // Adjust text size if it exceeds 90% of canvas width
+                const currentFontSize = parseInt(window.getComputedStyle(textLayer).fontSize);
+                textLayer.style.fontSize = `${currentFontSize - 1}px`; // Decrease font size
+                textWidth = textLayer.offsetWidth; // Update text width
+            }
         }
 
         function setColor(color) {
@@ -227,28 +243,19 @@
             switch(type) {
                 case 'minimal':
                     canvas.style.background = '#ffffff';
-                    textLayer.style.color = '#333333';
-                    textLayer.style.fontFamily = "'Segoe UI'";
-                    textLayer.style.textShadow = '2px 2px 4px rgba(0,0,0,0.2)';
+                    textLayer.style.fontWeight = 'normal';
                     break;
                 case 'bold':
-                    canvas.style.background = '#000000';
-                    textLayer.style.color = '#ffffff';
-                    textLayer.style.fontFamily = "'Arial Black'";
-                    textLayer.style.letterSpacing = '2px';
-                    textLayer.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5)';
+                    canvas.style.background = '#e8f0fe';
+                    textLayer.style.fontWeight = 'bold';
                     break;
                 case 'gradient':
-                    canvas.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
-                    textLayer.style.color = '#ffffff';
-                    textLayer.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5)';
+                    canvas.style.background = 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)';
+                    textLayer.style.fontWeight = 'normal';
                     break;
                 case 'quote':
-                    canvas.style.background = '#f8f9fa';
-                    textLayer.style.color = '#333333';
-                    textLayer.style.fontFamily = 'Georgia';
-                    textLayer.style.fontStyle = 'italic';
-                    textLayer.style.textShadow = '1px 1px 3px rgba(0,0,0,0.2)';
+                    canvas.style.background = '#f0f2f5';
+                    textLayer.style.fontWeight = 'italic';
                     break;
             }
         }
@@ -264,4 +271,5 @@
     </script>
 </body>
 </html>
+
 
