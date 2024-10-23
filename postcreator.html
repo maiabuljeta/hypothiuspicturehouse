@@ -12,6 +12,34 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
+        const newStyles = `
+.graphics-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.text-layer {
+    z-index: 1;
+    background: transparent;
+}
+
+.emphasis {
+    font-size: 1.5em;
+    font-weight: bold;
+    display: inline-block;
+    transform: scale(1.2);
+    margin: 0 5px;
+}
+
+.graphic {
+    position: absolute;
+    transition: all 0.3s ease;
+}
+`;
+
         body {
             background: #f0f2f5;
             min-height: 100vh;
@@ -209,6 +237,39 @@
             textLayer.style.color = currentColor;
         }
 
+        // Modify your existing textInput event listener
+textInput.addEventListener('input', (e) => {
+    textLayer.innerText = e.target.value;
+    emphasizeWords();
+    addGraphics();
+});
+
+// Modify your applyTemplate function
+const originalApplyTemplate = applyTemplate;
+function applyTemplate(type) {
+    originalApplyTemplate(type);
+    addGraphics();
+}
+
+// Initialize graphics when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGraphics();
+    addGraphics();
+});
+
+// Add to your setColor function
+const originalSetColor = setColor;
+function setColor(color) {
+    originalSetColor(color);
+    addGraphics();
+}
+
+const originalUpdateStyle = updateStyle;
+function updateStyle() {
+    originalUpdateStyle();
+    addGraphics();
+}
+        
         function setColor(color) {
             currentColor = color;
             updateStyle();
@@ -262,6 +323,84 @@
 
         // Initialize with default styles
         updateStyle();
+
+
+        function initializeGraphics() {
+    const canvas = document.getElementById('post-canvas');
+    
+    // Create graphics layer if it doesn't exist
+    if (!document.querySelector('.graphics-layer')) {
+        const graphicsLayer = document.createElement('div');
+        graphicsLayer.className = 'graphics-layer';
+        canvas.insertBefore(graphicsLayer, canvas.firstChild);
+    }
+    
+    // Add the new styles
+    if (!document.getElementById('dynamic-styles')) {
+        const styleSheet = document.createElement('style');
+        styleSheet.id = 'dynamic-styles';
+        styleSheet.textContent = newStyles;
+        document.head.appendChild(styleSheet);
+    }
+}
+
+function addGraphics() {
+    const graphicsLayer = document.querySelector('.graphics-layer');
+    const textLayer = document.getElementById('text-layer');
+    const textLength = textLayer.innerText.length;
+    
+    // Clear existing graphics
+    graphicsLayer.innerHTML = '';
+    
+    // Determine number of graphics based on text length
+    const graphicCount = Math.min(Math.ceil(textLength / 50), 5);
+    
+    // Graphics patterns
+    const patterns = [
+        { shape: '●', color: currentColor, size: '20px' },
+        { shape: '■', color: currentColor, size: '25px' },
+        { shape: '▲', color: currentColor, size: '22px' },
+        { shape: '◆', color: currentColor, size: '24px' },
+        { shape: '○', color: currentColor, size: '28px' }
+    ];
+    
+    // Add graphics based on text content
+    for (let i = 0; i < graphicCount; i++) {
+        const graphic = document.createElement('div');
+        graphic.className = 'graphic';
+        
+        const pattern = patterns[i % patterns.length];
+        graphic.style.cssText = `
+            font-size: ${pattern.size};
+            color: ${pattern.color};
+            opacity: 0.15;
+            top: ${Math.random() * 80 + 10}%;
+            left: ${Math.random() * 80 + 10}%;
+            transform: rotate(${Math.random() * 360}deg);
+        `;
+        graphic.textContent = pattern.shape;
+        graphicsLayer.appendChild(graphic);
+    }
+}
+
+function emphasizeWords() {
+    const textLayer = document.getElementById('text-layer');
+    const words = textLayer.innerText.split(' ');
+    
+    // Find words to emphasize (e.g., words with all caps or surrounded by asterisks)
+    const emphasizedHTML = words.map(word => {
+        if (word.startsWith('*') && word.endsWith('*')) {
+            // Remove asterisks and add emphasis class
+            return `<span class="emphasis">${word.slice(1, -1)}</span>`;
+        } else if (word === word.toUpperCase() && word.length > 1) {
+            // Emphasize words in all caps
+            return `<span class="emphasis">${word}</span>`;
+        }
+        return word;
+    }).join(' ');
+    
+    textLayer.innerHTML = emphasizedHTML;
+}
     </script>
 </body>
 </html>
