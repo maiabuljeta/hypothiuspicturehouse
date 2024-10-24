@@ -27,7 +27,7 @@
             background: white;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Increased shadow */
         }
 
         .sidebar {
@@ -67,7 +67,7 @@
             height: 100%;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Increased shadow */
             overflow: hidden;
             position: relative;
         }
@@ -80,13 +80,15 @@
             text-align: center;
             width: 80%;
             transition: all 0.3s ease;
-            color: #ffffff; /* Change the main text color */
-            font-size: 60px;
+            color: #333;
+            font-size: 60px; /* Base size for dynamic 3D effect */
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5),
+                         0 10px 30px rgba(0, 0, 0, 0.3), 
+                         0 15px 40px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid transparent;
             font-weight: bold; /* Bold font for better 3D effect */
-            text-shadow: 
-                2px 2px 0px #4a4a4a, 
-                4px 4px 0px #3c3c3c, 
-                6px 6px 0px #2e2e2e; /* Layered shadows for depth */
         }
 
         button {
@@ -204,7 +206,7 @@
         const textLayer = document.getElementById('text-layer');
         const fontSelect = document.getElementById('font-select');
         const sizeSlider = document.getElementById('size-slider');
-        let currentColor = '#ffffff'; // Set to white for 3D effect
+        let currentColor = '#333333';
 
         textInput.addEventListener('input', (e) => {
             textLayer.innerText = e.target.value;
@@ -214,10 +216,7 @@
             textLayer.style.fontFamily = fontSelect.value;
             textLayer.style.fontSize = `${sizeSlider.value}px`;
             textLayer.style.color = currentColor;
-            textLayer.style.textShadow = 
-                `2px 2px 0px ${shadeColor(currentColor, -20)}, 
-                4px 4px 0px ${shadeColor(currentColor, -40)}, 
-                6px 6px 0px ${shadeColor(currentColor, -60)}`; // Use shades for depth
+            textLayer.style.borderColor = currentColor;
         }
 
         function setColor(color) {
@@ -225,33 +224,34 @@
             updateStyle();
         }
 
-        function shadeColor(color, percent) {
-            const num = parseInt(color.slice(1), 16),
-                amt = Math.round(2.55 * percent),
-                R = (num >> 16) + amt,
-                G = (num >> 8 & 0x00FF) + amt,
-                B = (num & 0x0000FF) + amt;
-            return '#' + (0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1);
-        }
-
         function applyTemplate(type) {
             const canvas = document.getElementById('post-canvas');
-            switch (type) {
+            const textLayer = document.getElementById('text-layer');
+
+            switch(type) {
                 case 'minimal':
                     canvas.style.background = '#ffffff';
+                    textLayer.style.color = '#333333';
+                    textLayer.style.fontFamily = "'Segoe UI'";
+                    textLayer.style.textShadow = '0 3px 10px rgba(0,0,0,0.2)';
                     break;
                 case 'bold':
-                    canvas.style.background = '#f8f9fa';
-                    textLayer.style.color = '#000000';
+                    canvas.style.background = '#000000';
+                    textLayer.style.color = '#ffffff';
+                    textLayer.style.fontFamily = "'Arial Black'";
+                    textLayer.style.letterSpacing = '2px';
+                    textLayer.style.textShadow = '0 5px 15px rgba(0,0,0,0.5)';
                     break;
                 case 'gradient':
-                    canvas.style.background = 'linear-gradient(135deg, #ff6b6b, #4ecdc4)';
+                    canvas.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
                     textLayer.style.color = '#ffffff';
+                    textLayer.style.textShadow = '0 5px 20px rgba(0,0,0,0.5)';
                     break;
                 case 'quote':
                     canvas.style.background = '#f8f9fa';
                     textLayer.style.color = '#333333';
                     textLayer.style.fontFamily = "'Brush Script MT'";
+                    textLayer.style.textShadow = '0 3px 10px rgba(0,0,0,0.2)';
                     break;
             }
             updateStyle();
@@ -268,6 +268,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
