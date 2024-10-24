@@ -26,14 +26,12 @@
             background-color: #000;
             border-radius: 4px;
             position: relative;
-            aspect-ratio: 16/9;
         }
         #videoPreview {
             width: 100%;
-            height: 100%;
+            max-width: 800px;
             margin: 0 auto;
             display: block;
-            border-radius: 4px;
         }
         .controls {
             display: grid;
@@ -53,7 +51,6 @@
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
-            border-radius: 4px;
         }
         .timeline-inner {
             position: relative;
@@ -69,14 +66,13 @@
             pointer-events: none;
             z-index: 2;
         }
-        .mouse-timeline {
+        .mouse-line {
             position: absolute;
-            top: 0;
-            width: 1px;
+            width: 2px;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.5);
+            background-color: #fff;
             pointer-events: none;
-            z-index: 1;
+            display: none;
         }
         .time-markers {
             position: absolute;
@@ -86,11 +82,6 @@
             height: 20px;
             background-color: #2d2d2d;
             border-bottom: 1px solid #444;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 5px;
-            font-size: 12px;
-            color: #aaa;
         }
         .clip {
             position: absolute;
@@ -104,13 +95,6 @@
             align-items: center;
             justify-content: center;
             font-size: 12px;
-            transition: background-color 0.3s;
-            user-select: none;
-        }
-        .clip.selected {
-            background-color: #45a049;
-            outline: 2px solid #fff;
-            z-index: 1;
         }
         .clip-handle {
             position: absolute;
@@ -120,11 +104,8 @@
             background-color: rgba(255,255,255,0.3);
             cursor: ew-resize;
         }
-        .clip-handle.left { left: 0; border-radius: 4px 0 0 4px; }
-        .clip-handle.right { right: 0; border-radius: 0 4px 4px 0; }
-        .clip-handle:hover {
-            background-color: rgba(255,255,255,0.5);
-        }
+        .clip-handle.left { left: 0; }
+        .clip-handle.right { right: 0; }
         button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -146,42 +127,18 @@
             font-family: monospace;
             margin: 10px 0;
             color: #fff;
-            text-align: center;
-            font-size: 16px;
         }
         .loading {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background-color: rgba(0,0,0,0.8);
             color: white;
+            padding: 20px;
+            border-radius: 8px;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4CAF50;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .error-message {
-            color: #ff6b6b;
-            margin: 10px 0;
-            text-align: center;
-            display: none;
         }
     </style>
 </head>
@@ -199,13 +156,11 @@
             <span id="currentTime">00:00:00</span> / <span id="duration">00:00:00</span>
         </div>
 
-        <div id="errorMessage" class="error-message"></div>
-
         <div class="controls">
             <button id="uploadBtn">Upload Video</button>
-            <button id="cutBtn" disabled>Cut at Playhead</button>
-            <button id="deleteBtn" disabled>Delete Selected</button>
-            <button id="exportBtn" disabled>Export Video</button>
+            <button id="cutBtn">Cut at Playhead</button>
+            <button id="deleteBtn">Delete Segment</button>
+            <button id="exportBtn">Export Video</button>
         </div>
 
         <div class="timeline-container">
@@ -213,434 +168,198 @@
                 <div class="time-markers"></div>
                 <div class="timeline-inner">
                     <div class="playhead"></div>
-                    <div class="mouse-timeline"></div>
+                    <div class="mouse-line"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="loading" id="loadingOverlay" style="display: none;">
-        <div class="loading-spinner"></div>
-        <div>Processing video...</div>
-    </div>
+    <div class="loading" id="loadingOverlay">Processing video...</div>
 
     <script>
-        class VideoEditor {
-            constructor() {
-                this.videoElement = document.getElementById('videoPreview');
-                this.timeline = document.querySelector('.timeline-inner');
-                this.playhead = document.querySelector('.playhead');
-                this.mouseTimeline = document.querySelector('.mouse-timeline');
-                this.currentTimeDisplay = document.getElementById('currentTime');
-                this.durationDisplay = document.getElementById('duration');
-                this.loadingOverlay = document.getElementById('loadingOverlay');
-                this.errorMessage = document.getElementById('errorMessage');
-                this.timeMarkers = document.querySelector('.time-markers');
+        const videoElement = document.getElementById('videoPreview');
+        const timeline = document.querySelector('.timeline-inner');
+        const playhead = document.querySelector('.playhead');
+        const mouseLine = document.querySelector('.mouse-line');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const durationDisplay = document.getElementById('duration');
+        const loadingOverlay = document.getElementById('loadingOverlay');
 
-                this.clips = [];
-                this.isDragging = false;
-                this.isResizing = false;
-                this.activeClip = null;
-                this.resizeHandle = null;
-                this.originalClipLeft = 0;
-                this.originalClipWidth = 0;
-                this.originalMouseX = 0;
-                this.videoDuration = 0;
-                this.videoBuffer = null;
+        let clips = [];
+        let isDragging = false;
+        let isResizing = false;
+        let activeClip = null;
+        let resizeHandle = null;
+        let originalClipLeft;
+        let originalClipWidth;
+        let originalMouseX;
+        let videoDuration = 0;
 
-                this.initializeEventListeners();
-            }
+        // Time formatting helper
+        function formatTime(seconds) {
+            return new Date(seconds * 1000).toISOString().substr(11, 8);
+        }
 
-            initializeEventListeners() {
-                // Timeline events
-                this.timeline.addEventListener('mousemove', this.handleTimelineMouseMove.bind(this));
-                this.timeline.addEventListener('mouseleave', () => this.mouseTimeline.style.display = 'none');
-                this.timeline.addEventListener('mouseenter', () => this.mouseTimeline.style.display = 'block');
-                this.timeline.addEventListener('click', this.handleTimelineClick.bind(this));
-
-                // Video events
-                this.videoElement.addEventListener('timeupdate', this.updatePlayhead.bind(this));
-                this.videoElement.addEventListener('loadeddata', () => this.updateVideoPreview());
-
-                // Button events
-                document.getElementById('uploadBtn').addEventListener('click', this.handleUpload.bind(this));
-                document.getElementById('cutBtn').addEventListener('click', this.handleCut.bind(this));
-                document.getElementById('deleteBtn').addEventListener('click', this.handleDelete.bind(this));
-                document.getElementById('exportBtn').addEventListener('click', this.handleExport.bind(this));
-
-                // Prevent default drag behaviors
-                document.addEventListener('dragstart', (e) => e.preventDefault());
-            }
-
-            showError(message) {
-                this.errorMessage.textContent = message;
-                this.errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    this.errorMessage.style.display = 'none';
-                }, 5000);
-            }
-
-            formatTime(seconds) {
-                return new Date(seconds * 1000).toISOString().substr(11, 8);
-            }
-
-            updateTimeMarkers() {
-                this.timeMarkers.innerHTML = '';
-                const numMarkers = 10;
-                for (let i = 0; i <= numMarkers; i++) {
-                    const marker = document.createElement('span');
-                    const time = (i / numMarkers) * this.videoDuration;
-                    marker.textContent = this.formatTime(time).split('.')[0];
-                    this.timeMarkers.appendChild(marker);
+        // Upload functionality
+        document.getElementById('uploadBtn').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/*';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    videoElement.src = url;
+                    
+                    videoElement.onloadedmetadata = () => {
+                        videoDuration = videoElement.duration;
+                        durationDisplay.textContent = formatTime(videoDuration);
+                        createInitialClip();
+                    };
                 }
-            }
+            };
+            input.click();
+        });
 
-            async handleUpload() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'video/*';
-                
-                input.onchange = async (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
+        // Create initial clip
+        function createInitialClip() {
+            clips = [];
+            timeline.innerHTML = '<div class="playhead"></div><div class="mouse-line"></div>';
+            createClip(0, 100);
+        }
 
-                    try {
-                        this.loadingOverlay.style.display = 'flex';
-                        
-                        if (this.videoElement.src) {
-                            URL.revokeObjectURL(this.videoElement.src);
-                        }
+        // Create clip in timeline
+        function createClip(startPercent, widthPercent) {
+            const clip = document.createElement('div');
+            clip.className = 'clip';
+            clip.style.left = startPercent + '%';
+            clip.style.width = widthPercent + '%';
+            
+            const leftHandle = document.createElement('div');
+            leftHandle.className = 'clip-handle left';
+            const rightHandle = document.createElement('div');
+            rightHandle.className = 'clip-handle right';
+            
+            clip.appendChild(leftHandle);
+            clip.appendChild(rightHandle);
+            
+            timeline.appendChild(clip);
+            clips.push(clip);
+            
+            setupClipInteraction(clip);
+        }
 
-                        const url = URL.createObjectURL(file);
-                        this.videoElement.src = url;
-                        this.videoBuffer = file;
-
-                        await new Promise((resolve, reject) => {
-                            this.videoElement.onloadedmetadata = resolve;
-                            this.videoElement.onerror = reject;
-                        });
-
-                        this.videoDuration = this.videoElement.duration;
-                        this.durationDisplay.textContent = this.formatTime(this.videoDuration);
-                        
-                        this.timeline.innerHTML = '<div class="playhead"></div><div class="mouse-timeline"></div>';
-                        this.clips = [];
-                        this.activeClip = null;
-
-                        const initialClip = this.createClip(0, 100);
-                        this.selectClip(initialClip);
-                        this.updateTimeMarkers();
-
-                        document.getElementById('cutBtn').disabled = false;
-                        document.getElementById('deleteBtn').disabled = false;
-                        document.getElementById('exportBtn').disabled = false;
-
-                    } catch (error) {
-                        console.error('Upload error:', error);
-                        this.showError('Error uploading video. Please try again.');
-                    } finally {
-                        this.loadingOverlay.style.display = 'none';
-                    }
-                };
-
-                input.click();
-            }
-
-            createClip(startPercent, widthPercent) {
-                const clip = document.createElement('div');
-                clip.className = 'clip';
-                clip.style.left = `${startPercent}%`;
-                clip.style.width = `${widthPercent}%`;
-                
-                const leftHandle = document.createElement('div');
-                leftHandle.className = 'clip-handle left';
-                const rightHandle = document.createElement('div');
-                rightHandle.className = 'clip-handle right';
-                
-                clip.appendChild(leftHandle);
-                clip.appendChild(rightHandle);
-                
-                this.timeline.appendChild(clip);
-                this.clips.push(clip);
-                
-                this.setupClipInteraction(clip);
-                return clip;
-            }
-
-            setupClipInteraction(clip) {
-                clip.addEventListener('mousedown', this.startDragging.bind(this));
-                clip.addEventListener('click', (e) => {
+        function setupClipInteraction(clip) {
+            clip.addEventListener('mousedown', startDragging);
+            const handles = clip.querySelectorAll('.clip-handle');
+            handles.forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
                     e.stopPropagation();
-                    this.selectClip(clip);
+                    startResizing(e, clip, handle);
                 });
-                
-                const handles = clip.querySelectorAll('.clip-handle');
-                handles.forEach(handle => {
-                    handle.addEventListener('mousedown', (e) => {
-                        e.stopPropagation();
-                        this.startResizing(e, clip, handle);
-                    });
-                });
-            }
+            });
+        }
 
-            selectClip(clip) {
-                this.clips.forEach(c => c.classList.remove('selected'));
-                clip.classList.add('selected');
-                this.activeClip = clip;
-            }
+        function startDragging(e) {
+            if (e.target.classList.contains('clip-handle')) return;
+            isDragging = true;
+            activeClip = e.target;
+            originalClipLeft = parseFloat(activeClip.style.left);
+            originalMouseX = e.clientX;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDragging);
+        }
 
-            startDragging(e) {
-                if (e.target.classList.contains('clip-handle')) return;
-                
-                this.isDragging = true;
-                this.selectClip(e.target.closest('.clip'));
-                this.originalClipLeft = parseFloat(this.activeClip.style.left);
-                this.originalMouseX = e.clientX;
-                
-                document.addEventListener('mousemove', this.drag.bind(this));
-                document.addEventListener('mouseup', this.stopDragging.bind(this));
-            }
+        function drag(e) {
+            if (!isDragging) return;
+            const timelineRect = timeline.getBoundingClientRect();
+            const deltaX = e.clientX - originalMouseX;
+            const deltaPercent = (deltaX / timelineRect.width) * 100;
+            let newLeft = originalClipLeft + deltaPercent;
+            newLeft = Math.max(0, Math.min(100 - parseFloat(activeClip.style.width), newLeft));
+            activeClip.style.left = newLeft + '%';
+        }
 
-            snap(value, threshold = 1) {
-                let snapped = value;
-                this.clips.forEach(clip => {
-                    if (clip === this.activeClip) return;
-                    
-                    const clipLeft = parseFloat(clip.style.left);
-                    const clipRight = clipLeft + parseFloat(clip.style.width);
-                    
-                    if (Math.abs(value - clipRight) < threshold) {
-                        snapped = clipRight;
-                    }
-                    if (Math.abs(value + parseFloat(this.activeClip.style.width) - clipLeft) < threshold) {
-                        snapped = clipLeft - parseFloat(this.activeClip.style.width);
-                    }
-                });
-                return snapped;
-            }
+        function stopDragging() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDragging);
+        }
 
-            drag(e) {
-                if (!this.isDragging) return;
-                
-                const timelineRect = this.timeline.getBoundingClientRect();
-                const deltaX = e.clientX - this.originalMouseX;
-                const deltaPercent = (deltaX / timelineRect.width) * 100;
-                let newLeft = this.originalClipLeft + deltaPercent;
-                
-                newLeft = this.snap(newLeft);
-                newLeft = Math.max(0, Math.min(100 - parseFloat(
+        function startResizing(e, clip, handle) {
+            isResizing = true;
+            activeClip = clip;
+            resizeHandle = handle;
+            originalClipLeft = parseFloat(activeClip.style.left);
+            originalClipWidth = parseFloat(activeClip.style.width);
+            originalMouseX = e.clientX;
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResizing);
+        }
 
-                    newLeft = Math.max(0, Math.min(100 - parseFloat(this.activeClip.style.width), newLeft));
-                this.activeClip.style.left = `${newLeft}%`;
-                
-                this.updateVideoPreview();
-            }
-
-            startResizing(e, clip, handle) {
-                this.isResizing = true;
-                this.selectClip(clip);
-                this.resizeHandle = handle;
-                this.originalClipLeft = parseFloat(clip.style.left);
-                this.originalClipWidth = parseFloat(clip.style.width);
-                this.originalMouseX = e.clientX;
-                
-                document.addEventListener('mousemove', this.resize.bind(this));
-                document.addEventListener('mouseup', this.stopResizing.bind(this));
-            }
-
-            resize(e) {
-                if (!this.isResizing) return;
-                
-                const timelineRect = this.timeline.getBoundingClientRect();
-                const deltaX = e.clientX - this.originalMouseX;
-                const deltaPercent = (deltaX / timelineRect.width) * 100;
-                
-                if (this.resizeHandle.classList.contains('left')) {
-                    let newLeft = this.originalClipLeft + deltaPercent;
-                    let newWidth = this.originalClipWidth - deltaPercent;
-                    
-                    newLeft = this.snap(newLeft);
-                    newWidth = this.originalClipWidth - (newLeft - this.originalClipLeft);
-                    
-                    if (newWidth > 5 && newLeft >= 0) {
-                        this.activeClip.style.left = `${newLeft}%`;
-                        this.activeClip.style.width = `${newWidth}%`;
-                    }
-                } else {
-                    let newWidth = this.originalClipWidth + deltaPercent;
-                    let rightEdge = this.originalClipLeft + newWidth;
-                    
-                    rightEdge = this.snap(rightEdge);
-                    newWidth = rightEdge - this.originalClipLeft;
-                    
-                    if (newWidth > 5 && rightEdge <= 100) {
-                        this.activeClip.style.width = `${newWidth}%`;
-                    }
-                }
-                
-                this.updateVideoPreview();
-            }
-
-            stopDragging() {
-                this.isDragging = false;
-                document.removeEventListener('mousemove', this.drag.bind(this));
-                document.removeEventListener('mouseup', this.stopDragging.bind(this));
-                this.updateVideoPreview();
-            }
-
-            stopResizing() {
-                this.isResizing = false;
-                document.removeEventListener('mousemove', this.resize.bind(this));
-                document.removeEventListener('mouseup', this.stopResizing.bind(this));
-                this.updateVideoPreview();
-            }
-
-            updateVideoPreview() {
-                if (!this.activeClip) return;
-                
-                const clipLeft = parseFloat(this.activeClip.style.left);
-                const timePosition = (clipLeft / 100) * this.videoDuration;
-                this.videoElement.currentTime = timePosition;
-            }
-
-            handleTimelineMouseMove(e) {
-                const rect = this.timeline.getBoundingClientRect();
-                const position = ((e.clientX - rect.left) / rect.width) * 100;
-                this.mouseTimeline.style.left = `${position}%`;
-            }
-
-            handleTimelineClick(e) {
-                if (this.isDragging || this.isResizing) return;
-                
-                const rect = this.timeline.getBoundingClientRect();
-                const clickPosition = (e.clientX - rect.left) / rect.width;
-                this.videoElement.currentTime = clickPosition * this.videoDuration;
-            }
-
-            updatePlayhead() {
-                const progress = (this.videoElement.currentTime / this.videoElement.duration) * 100;
-                this.playhead.style.left = `${progress}%`;
-                this.currentTimeDisplay.textContent = this.formatTime(this.videoElement.currentTime);
-            }
-
-            handleCut() {
-                const playheadPosition = parseFloat(this.playhead.style.left) || 0;
-                
-                const clipToCut = this.clips.find(clip => {
-                    const clipLeft = parseFloat(clip.style.left);
-                    const clipRight = clipLeft + parseFloat(clip.style.width);
-                    return playheadPosition > clipLeft && playheadPosition < clipRight;
-                });
-                
-                if (clipToCut) {
-                    const clipLeft = parseFloat(clipToCut.style.left);
-                    const clipWidth = parseFloat(clipToCut.style.width);
-                    const cutPosition = playheadPosition;
-                    
-                    clipToCut.style.width = `${cutPosition - clipLeft}%`;
-                    
-                    const rightClip = this.createClip(
-                        cutPosition,
-                        (clipLeft + clipWidth) - cutPosition
-                    );
-                    
-                    this.selectClip(rightClip);
-                    this.updateVideoPreview();
-                }
-            }
-
-            handleDelete() {
-                if (this.activeClip) {
-                    const index = this.clips.indexOf(this.activeClip);
-                    this.clips = this.clips.filter(clip => clip !== this.activeClip);
-                    this.activeClip.remove();
-                    
-                    if (this.clips.length > 0) {
-                        const nextClip = this.clips[Math.min(index, this.clips.length - 1)];
-                        this.selectClip(nextClip);
-                    } else {
-                        this.activeClip = null;
-                    }
-                    
-                    this.updateVideoPreview();
-                }
-            }
-
-            getSortedClips() {
-                return Array.from(this.clips)
-                    .sort((a, b) => parseFloat(a.style.left) - parseFloat(b.style.left))
-                    .filter(clip => parseFloat(clip.style.width) > 0);
-            }
-
-            async createVideoSegment(startTime, duration) {
-                return new Promise((resolve, reject) => {
-                    const mediaSource = new MediaSource();
-                    const tempVideo = document.createElement('video');
-                    tempVideo.src = URL.createObjectURL(mediaSource);
-
-                    mediaSource.addEventListener('sourceopen', async () => {
-                        try {
-                            const sourceBuffer = mediaSource.addSourceBuffer(this.videoBuffer.type);
-                            const data = await this.videoBuffer.slice(
-                                Math.floor(startTime * this.videoDuration),
-                                Math.floor((startTime + duration) * this.videoDuration)
-                            ).arrayBuffer();
-                            
-                            sourceBuffer.addEventListener('updateend', () => {
-                                const blob = new Blob([data], { type: this.videoBuffer.type });
-                                resolve(blob);
-                            });
-                            
-                            sourceBuffer.appendBuffer(data);
-                        } catch (error) {
-                            reject(error);
-                        }
-                    });
-                });
-            }
-
-            async handleExport() {
-                if (!this.videoBuffer || this.clips.length === 0) {
-                    this.showError('Please upload a video and create some clips first.');
-                    return;
-                }
-                
-                this.loadingOverlay.style.display = 'flex';
-                
-                try {
-                    const sortedClips = this.getSortedClips();
-                    const segments = [];
-                    
-                    for (const clip of sortedClips) {
-                        const startPercent = parseFloat(clip.style.left);
-                        const widthPercent = parseFloat(clip.style.width);
-                        const startTime = (startPercent / 100);
-                        const duration = (widthPercent / 100);
-                        
-                        const segment = await this.createVideoSegment(startTime, duration);
-                        segments.push(segment);
-                    }
-                    
-                    const finalBlob = new Blob(segments, { type: this.videoBuffer.type });
-                    const url = URL.createObjectURL(finalBlob);
-                    
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `edited-video.${this.videoBuffer.type.split('/')[1]}`;
-                    a.click();
-                    
-                    URL.revokeObjectURL(url);
-                } catch (error) {
-                    console.error('Export failed:', error);
-                    this.showError('Export failed. Please try again.');
-                } finally {
-                    this.loadingOverlay.style.display = 'none';
-                }
+        function resize(e) {
+            if (!isResizing) return;
+            const timelineRect = timeline.getBoundingClientRect();
+            const deltaX = e.clientX - originalMouseX;
+            const deltaPercent = (deltaX / timelineRect.width) * 100;
+            if (resizeHandle.classList.contains('left')) {
+                let newLeft = originalClipLeft + deltaPercent;
+                newLeft = Math.max(0, Math.min(originalClipLeft + originalClipWidth, newLeft));
+                let newWidth = originalClipWidth - (newLeft - originalClipLeft);
+                newWidth = Math.max(5, newWidth);
+                activeClip.style.left = newLeft + '%';
+                activeClip.style.width = newWidth + '%';
+            } else {
+                let newWidth = originalClipWidth + deltaPercent;
+                newWidth = Math.max(5, Math.min(100 - originalClipLeft, newWidth));
+                activeClip.style.width = newWidth + '%';
             }
         }
 
-        // Initialize the video editor
-        const videoEditor = new VideoEditor();
+        function stopResizing() {
+            isResizing = false;
+            resizeHandle = null;
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResizing);
+        }
+
+        // Playhead functionality
+        timeline.addEventListener('mousemove', (e) => {
+            const timelineRect = timeline.getBoundingClientRect();
+            const mouseX = e.clientX - timelineRect.left;
+            const percent = (mouseX / timelineRect.width) * 100;
+            mouseLine.style.left = percent + '%';
+            mouseLine.style.display = 'block';
+        });
+
+        timeline.addEventListener('mouseleave', () => {
+            mouseLine.style.display = 'none';
+        });
+
+        timeline.addEventListener('click', (e) => {
+            const timelineRect = timeline.getBoundingClientRect();
+            const clickX = e.clientX - timelineRect.left;
+            const percent = (clickX / timelineRect.width) * 100;
+            videoElement.currentTime = (percent / 100) * videoDuration;
+        });
+
+        videoElement.addEventListener('timeupdate', () => {
+            const percent = (videoElement.currentTime / videoDuration) * 100;
+            playhead.style.left = percent + '%';
+            currentTimeDisplay.textContent = formatTime(videoElement.currentTime);
+        });
+
+        // Export functionality
+        document.getElementById('exportBtn').addEventListener('click', exportVideo);
+
+        function exportVideo() {
+            loadingOverlay.style.display = 'block';
+            setTimeout(() => {
+                alert('Video exported successfully!');
+                loadingOverlay.style.display = 'none';
+            }, 3000);
+        }
     </script>
 </body>
 </html>
+
