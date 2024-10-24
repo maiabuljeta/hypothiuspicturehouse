@@ -225,30 +225,67 @@
         });
 
         // Upload functionality with buffer creation
-        document.getElementById('uploadBtn').addEventListener('click', () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'video/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const url = URL.createObjectURL(file);
-                    videoElement.src = url;
-                    
-                    // Create video buffer
-                    const response = await fetch(url);
-                    videoBuffer = await response.blob();
-                    
-                    // Wait for video metadata to load
-                    videoElement.onloadedmetadata = () => {
-                        videoDuration = videoElement.duration;
-                        durationDisplay.textContent = formatTime(videoDuration);
-                        createInitialClip();
-                    };
+document.getElementById('uploadBtn').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'video/*';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                // Clean up any existing video
+                if (videoElement.src) {
+                    URL.revokeObjectURL(videoElement.src);
                 }
-            };
-            input.click();
-        });
+                
+                // Create new blob URL
+                const url = URL.createObjectURL(file);
+                videoElement.src = url;
+                
+                // Store the original file as buffer
+                videoBuffer = file;
+                
+                // Reset UI
+                timeline.innerHTML = '<div class="playhead"></div><div class="mouse-timeline"></div>';
+                clips = [];
+                activeClip = null;
+                
+                // Wait for video to be ready
+                videoElement.onloadedmetadata = () => {
+                    videoDuration = videoElement.duration;
+                    durationDisplay.textContent = formatTime(videoDuration);
+                    
+                    // Create initial clip
+                    const initialClip = createClip(0, 100);
+                    selectClip(initialClip);
+                    
+                    // Enable buttons
+                    document.getElementById('cutBtn').disabled = false;
+                    document.getElementById('deleteBtn').disabled = false;
+                    document.getElementById('exportBtn').disabled = false;
+                };
+                
+                videoElement.onerror = (error) => {
+                    console.error('Video loading error:', error);
+                    alert('Error loading video. Please try a different file.');
+                };
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Error uploading video. Please try again.');
+            }
+        }
+    };
+    
+    input.click();
+});
+
+// Also add this helper function to better handle file validation
+function isValidVideoFile(file) {
+    const validTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+    return validTypes.includes(file.type);
+}
 
         // Create initial clip
         function createInitialClip() {
