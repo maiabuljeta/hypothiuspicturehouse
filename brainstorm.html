@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bubble {
+            position: absolute;
+            min-width: 100px;
+            min-height: 100px;
+            border-radius: 50%;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: float 15s infinite ease-in-out;
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            z-index: 1;
+        }
+
+        .bubble.active {
+            animation: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -15px) rotate(2deg); }
+            50% { transform: translate(-5px, 10px) rotate(-1deg); }
+            75% { transform: translate(-10px, -5px) rotate(1deg); }
+        }
+
+        .bubble-content {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            text-align: center;
+            resize: none;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .bubble-content:focus {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 35px;
+            backdrop-filter: blur(8px);
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .resize-handle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: se-resize;
+            bottom: 5px;
+            right: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .resize-handle:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .connection-line {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="particles"></canvas>
+    <div class="controls">
+        <button onclick="addBubble()">Add Bubble</button>
+        <button onclick="startListening()">Voice Input</button>
+        <button onclick="toggleConnections()">Toggle Connections</button>
+        <button onclick="toggleTheme()">Toggle Theme</button>
+        <button onclick="saveBrainstorm()">Save</button>
+        <button onclick="loadBrainstorm()">Load</button>
+    </div>
+
+    <script>
+        let bubbles = [];
+        let isDragging = false;
+        let isResizing = false;
+        let currentBubble = null;
+        let offset = { x: 0, y: 0 };
+        let recognition = null;
+        let showConnections = false;
+        let isDarkTheme = true;
+        let particles = [];
+
+        // Initialize particles
+        const canvas = document.querySelector('.particles');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Create particles
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = function(event) {
+                const text = event.results[0][0].transcript;
+                if (currentBubble) {
+                    currentBubble.querySelector('.bubble-content').value = text;
+                }
+            };
+        }
+
+        function getRandomGradient() {
+            const gradients = [
+                'linear-gradient(45deg, #FF6B6B88, #4ECDC488)',
+                'linear-gradient(45deg, #A8E6CF88, #DCEDC188)',
+                'linear-gradient(45deg, #FFD93D88, #FF6B6B88)',
+                'linear-gradient(45deg, #6C5B7B88, #C06C8488)',
+                'linear-gradient(45deg, #45B7D188, #2E8BC088)'
+            ];
+            return gradients[Math.floor(Math.random() * gradients.length)];
+        }
+
+        function addBubble() {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.background = getRandomGradient();
+            bubble.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
+            bubble.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
+            bubble.style.width = '200px';
+            bubble.style.height = '200px';
+            bubble.style.animationDelay = `-${Math.random() * 15}s`;
+
+            const textarea = document.createElement('textarea');
+            textarea.className = 'bubble-content';
+            textarea.placeholder = 'Type your idea...';
+
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+
+            bubble.appendChild(textarea);
+            bubble.appendChild(resizeHandle);
+            document.body.appendChild(bubble);
+            bubbles.push(bubble);
+
+            initializeBubbleEvents(bubble);
+            updateConnections();
+        }
+
+        function initializeBubbleEvents(bubble) {
+            bubble.addEventListener('mousedown', (e) => {
+                if (e.target.className === 'resize-handle') {
+                    isResizing = true;
+                } else {
+                    isDragging = true;
+                    bubble.classList.add('active');
+                }
+                currentBubble = bubble;
+                offset = {
+                    x: e.clientX - bubble.offsetLeft,
+                    y: e.clientY - bubble.offsetTop
+                };
+                bubble.style.zIndex = 1000;
+            });
+
+            bubble.querySelector('.bubble-content').addEventListener('click', (e) => {
+                currentBubble = bubble;
+                e.stopPropagation();
+            });
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (!currentBubble) return;
+
+            if (isDragging) {
+                currentBubble.style.left = `${e.clientX - offset.x}px`;
+                currentBubble.style.top = `${e.clientY - offset.y}px`;
+                updateConnections();
+            } else if (isResizing) {
+                const width = e.clientX - currentBubble.offsetLeft;
+                const height = e.clientY - currentBubble.offsetTop;
+                currentBubble.style.width = `${Math.max(100, width)}px`;
+                currentBubble.style.height = `${Math.max(100, height)}px`;
+                updateConnections();
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (currentBubble) {
+                currentBubble.classList.remove('active');
+                currentBubble.style.zIndex = 1;
+            }
+            isDragging = false;
+            isResizing = false;
+        });
+
+        function updateConnections() {
+            if (!showConnections) return;
+            
+            // Remove existing lines
+            document.querySelectorAll('.connection-line').forEach(line => line.remove());
+
+            // Draw new lines
+            bubbles.forEach((bubble1, i) => {
+                bubbles.slice(i + 1).forEach(bubble2 => {
+                    const rect1 = bubble1.getBoundingClientRect();
+                    const rect2 = bubble2.getBoundingClientRect();
+
+                    const x1 = rect1.left + rect1.width / 2;
+                    const y1 = rect1.top + rect1.height / 2;
+                    const x2 = rect2.left + rect2.width / 2;
+                    const y2 = rect2.top + rect2.height / 2;
+
+                    const line = document.createElement('div');
+                    line.className = 'connection-line';
+                    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+                    line.style.width = `${length}px`;
+                    line.style.height = '1px';
+                    line.style.background = 'rgba(255, 255, 255, 0.2)';
+                    line.style.position = 'absolute';
+                    line.style.left = `${x1}px`;
+                    line.style.top = `${y1}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.style.transformOrigin = '0 0';
+
+                    document.body.appendChild(line);
+                });
+            });
+        }
+
+        function toggleConnections() {
+            showConnections = !showConnections;
+            updateConnections();
+        }
+
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.style.background = isDarkTheme 
+                ? 'linear-gradient(135deg, #0f172a, #1e293b, #0f172a)'
+                : 'linear-gradient(135deg, #f0f9ff, #e0f2fe, #f0f9ff)';
+        }
+
+        function startListening() {
+            if (recognition && currentBubble) {
+                recognition.start();
+            }
+        }
+
+        function saveBrainstorm() {
+            const data = Array.from(bubbles).map(bubble => ({
+                text: bubble.querySelector('.bubble-content').value,
+                position: {
+                    left: bubble.style.left,
+                    top: bubble.style.top
+                },
+                size: {
+                    width: bubble.style.width,
+                    height: bubble.style.height
+                },
+                background: bubble.style.background
+            }));
+            localStorage.setItem('brainstorm', JSON.stringify(data));
+            
+            // Add save animation
+            const saveButton = document.querySelector('button:nth-last-child(1)');
+            saveButton.style.background = '#4ade80';
+            setTimeout(() => {
+                saveButton.style.background = '';
+            }, 500);
+        }
+
+        function loadBrainstorm() {
+            const data = JSON.parse(localStorage.getItem('brainstorm'));
+            if (!data) return;
+
+            bubbles.forEach(bubble => bubble.remove());
+            bubbles = [];
+
+            data.forEach(bubbleData => {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.background = bubbleData.background;
+                bubble.style.left = bubbleData.position.left;
+                bubble.style.top = bubbleData.position.top;
+                bubble.style.width = bubbleData.size.width;
+                bubble.style.height = bubbleData.size.height;
+                bubble.style.animationDelay = `-${Math.random() * 15}s`;
+
+                const textarea = document.createElement('textarea');
+                textarea.className = 'bubble-content';
+                textarea.value = bubbleData.text;
+
+                const resizeHandle = document.createElement('div');
+                resizeHandle.className = 'resize-handle';
+
+                bubble.appendChild(textarea);
+                bubble.appendChild(resizeHandle);
+                document.body.appendChild(bubble);
+                bubbles.push(bubble);
+
+                initializeBubbleEvents(bubble);
+            });
+            updateConnections();
+        }
+
+        // Create initial bubble
+        addBubble();
+    </script>
+</body>
+</html>
