@@ -2,269 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>InstantPost - Quick Instagram Post Creator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>True 3D Text with Three.js</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
         body {
-            background: #f0f2f5;
-            min-height: 100vh;
-            padding: 20px;
+            margin: 0;
+            background-color: #f0f0f0;
         }
 
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .control-group {
-            margin-bottom: 20px;
-        }
-
-        .control-group label {
+        canvas {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
         }
 
-        input, select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        .canvas-container {
-            position: relative;
-            width: 600px;
-            height: 600px;
-            margin: 0 auto;
-        }
-
-        #post-canvas {
-            width: 100%;
-            height: 100%;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        #container {
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
-            position: relative;
-        }
-
-        .text-layer {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            width: 80%;
-            transition: all 0.3s ease;
-            color: #ffffff; /* Change the main text color */
-            font-size: 60px;
-            font-weight: bold; /* Bold font for better 3D effect */
-            text-shadow: 
-                2px 2px 0px #4a4a4a, 
-                4px 4px 0px #3c3c3c, 
-                6px 6px 0px #2e2e2e; /* Layered shadows for depth */
-        }
-
-        button {
-            background: #0095f6;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background: #0081d6;
-        }
-
-        .template-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .template {
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .template:hover {
-            border-color: #0095f6;
-            transform: translateY(-2px);
-        }
-
-        .color-picker {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-
-        .color-swatch {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .color-swatch:hover {
-            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="sidebar">
-            <div class="control-group">
-                <label>Quick Templates</label>
-                <div class="template-grid">
-                    <div class="template" onclick="applyTemplate('minimal')">Minimal</div>
-                    <div class="template" onclick="applyTemplate('bold')">Bold</div>
-                    <div class="template" onclick="applyTemplate('gradient')">Gradient</div>
-                    <div class="template" onclick="applyTemplate('quote')">Quote</div>
-                </div>
-            </div>
+    <div id="container"></div>
 
-            <div class="control-group">
-                <label>Text Content</label>
-                <textarea id="text-input" rows="4" placeholder="Enter your text here...">Your amazing caption here</textarea>
-            </div>
-
-            <div class="control-group">
-                <label>Font Style</label>
-                <select id="font-select" onchange="updateStyle()">
-                    <option value="'Segoe UI'">Modern</option>
-                    <option value="Georgia">Classic</option>
-                    <option value="'Arial Black'">Bold</option>
-                    <option value="'Brush Script MT'">Script</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label>Colors</label>
-                <div class="color-picker">
-                    <div class="color-swatch" style="background: #ff6b6b" onclick="setColor('#ff6b6b')"></div>
-                    <div class="color-swatch" style="background: #4ecdc4" onclick="setColor('#4ecdc4')"></div>
-                    <div class="color-swatch" style="background: #45b7d1" onclick="setColor('#45b7d1')"></div>
-                    <div class="color-swatch" style="background: #96ceb4" onclick="setColor('#96ceb4')"></div>
-                    <div class="color-swatch" style="background: #d4a5a5" onclick="setColor('#d4a5a5')"></div>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label>Text Size</label>
-                <input type="range" min="20" max="80" value="40" id="size-slider" onchange="updateStyle()">
-            </div>
-
-            <button onclick="downloadPost()" style="width: 100%; margin-top: 20px;">Download Post</button>
-        </div>
-
-        <div class="canvas-container">
-            <div id="post-canvas">
-                <div class="text-layer" id="text-layer">Your amazing caption here</div>
-            </div>
-        </div>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/loaders/FontLoader.js"></script>
+    <script src="https://threejs.org/examples/js/geometries/TextGeometry.js"></script>
 
     <script>
-        const textInput = document.getElementById('text-input');
-        const textLayer = document.getElementById('text-layer');
-        const fontSelect = document.getElementById('font-select');
-        const sizeSlider = document.getElementById('size-slider');
-        let currentColor = '#ffffff'; // Set to white for 3D effect
+        let scene, camera, renderer, textMesh;
 
-        textInput.addEventListener('input', (e) => {
-            textLayer.innerText = e.target.value;
-        });
+        // Initialize Three.js scene
+        function init() {
+            scene = new THREE.Scene();
 
-        function updateStyle() {
-            textLayer.style.fontFamily = fontSelect.value;
-            textLayer.style.fontSize = `${sizeSlider.value}px`;
-            textLayer.style.color = currentColor;
-            textLayer.style.textShadow = 
-                `2px 2px 0px ${shadeColor(currentColor, -20)}, 
-                4px 4px 0px ${shadeColor(currentColor, -40)}, 
-                6px 6px 0px ${shadeColor(currentColor, -60)}`; // Use shades for depth
-        }
+            // Set up a basic perspective camera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 200;
 
-        function setColor(color) {
-            currentColor = color;
-            updateStyle();
-        }
+            // Create the WebGL renderer and attach it to the container
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('container').appendChild(renderer.domElement);
 
-        function shadeColor(color, percent) {
-            const num = parseInt(color.slice(1), 16),
-                amt = Math.round(2.55 * percent),
-                R = (num >> 16) + amt,
-                G = (num >> 8 & 0x00FF) + amt,
-                B = (num & 0x0000FF) + amt;
-            return '#' + (0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1);
-        }
+            // Add lights to the scene
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
 
-        function applyTemplate(type) {
-            const canvas = document.getElementById('post-canvas');
-            switch (type) {
-                case 'minimal':
-                    canvas.style.background = '#ffffff';
-                    break;
-                case 'bold':
-                    canvas.style.background = '#f8f9fa';
-                    textLayer.style.color = '#000000';
-                    break;
-                case 'gradient':
-                    canvas.style.background = 'linear-gradient(135deg, #ff6b6b, #4ecdc4)';
-                    textLayer.style.color = '#ffffff';
-                    break;
-                case 'quote':
-                    canvas.style.background = '#f8f9fa';
-                    textLayer.style.color = '#333333';
-                    textLayer.style.fontFamily = "'Brush Script MT'";
-                    break;
-            }
-            updateStyle();
-        }
+            const pointLight = new THREE.PointLight(0xffffff, 0.8);
+            pointLight.position.set(50, 50, 100);
+            scene.add(pointLight);
 
-        function downloadPost() {
-            html2canvas(document.getElementById('post-canvas')).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'instagram_post.png';
-                link.href = canvas.toDataURL();
-                link.click();
+            // Load a font and create 3D text
+            const loader = new THREE.FontLoader();
+            loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+                const textGeometry = new THREE.TextGeometry('3D Text', {
+                    font: font,
+                    size: 40,
+                    height: 10,
+                    curveSegments: 12,
+                    bevelEnabled: true,
+                    bevelThickness: 1,
+                    bevelSize: 1,
+                    bevelOffset: 0,
+                    bevelSegments: 5
+                });
+
+                // Create a material for the text
+                const textMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x0095f6, // Choose any color for the text
+                    shininess: 50
+                });
+
+                // Create the text mesh and add it to the scene
+                textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                textMesh.position.set(-100, 0, 0);
+                scene.add(textMesh);
+
+                animate();
             });
         }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate the text for a cool effect
+            textMesh.rotation.x += 0.01;
+            textMesh.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        // Adjust the renderer and camera when resizing the window
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+
+        init();
     </script>
 </body>
 </html>
