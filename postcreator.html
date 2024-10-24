@@ -5,7 +5,7 @@
     <title>InstantPost - Quick Instagram Post Creator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -30,6 +30,58 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
+        .canvas-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            margin: 0 auto;
+            perspective: 1000px; /* Adds 3D depth */
+        }
+
+        #post-canvas {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .text-layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(20deg) rotateY(10deg);
+            text-align: center;
+            width: 80%;
+            font-size: 60px;
+            font-weight: bold;
+            color: #ffffff; /* Main text color */
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4); /* Gradient fill */
+            -webkit-background-clip: text;
+            color: transparent; /* Make text transparent to show gradient */
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="canvas-container">
+            <div id="post-canvas">
+                <div class="text-layer" id="text-layer">Your amazing caption here</div>
+            </div>
+        </div>
+    </div>
+
+
+
+    
+
+
+
+
+
         .sidebar {
             background: #f8f9fa;
             padding: 20px;
@@ -53,40 +105,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             margin-bottom: 10px;
-        }
-
-        .canvas-container {
-            position: relative;
-            width: 600px;
-            height: 600px;
-            margin: 0 auto;
-        }
-
-        #post-canvas {
-            width: 100%;
-            height: 100%;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .text-layer {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotateX(15deg) rotateY(10deg); /* 3D rotation */
-        text-align: center;
-        width: 80%;
-        transition: all 0.3s ease;
-        color: #ffffff; /* Main text color */
-        font-size: 60px;
-        font-weight: bold; /* For a stronger text */
-        text-shadow: 
-            1px 1px 2px rgba(0, 0, 0, 0.3); /* Lighter shadow for a more realistic feel */
-        perspective: 1000px; /* Creating 3D depth */
-    }
         }
 
         button {
@@ -200,6 +218,15 @@
     </div>
 
     <script>
+        
+        const textInput = document.getElementById('text-input');
+        const textLayer = document.getElementById('text-layer');
+
+        // Example of updating text dynamically if needed:
+        function updateText(newText) {
+            textLayer.innerText = newText;
+        }
+        
         const textInput = document.getElementById('text-input');
         const textLayer = document.getElementById('text-layer');
         const fontSelect = document.getElementById('font-select');
@@ -264,18 +291,12 @@
                 link.href = canvas.toDataURL();
                 link.click();
             });
-
-            function update3DTextRotation(xAngle, yAngle) {
-    textLayer.style.transform = `translate(-50%, -50%) rotateX(${xAngle}deg) rotateY(${yAngle}deg)`;
-}
-
-// Example usage (could be tied to sliders or button inputs for dynamic 3D manipulation)
-update3DTextRotation(15, 10); // Change these values to adjust the rotation.
-
         }
     </script>
 </body>
 </html>
+
+
 
 
 
