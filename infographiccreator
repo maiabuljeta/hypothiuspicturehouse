@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic Maker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .controls {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .preview {
+            flex: 1;
+            position: sticky;
+            top: 20px;
+        }
+
+        .infographic {
+            width: 800px;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f3f7 100%);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 40px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .point-number {
+            width: 30px;
+            height: 30px;
+            background: #0077B5;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background-color: #0077B5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #006097;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .color-picker input {
+            width: auto;
+        }
+
+        .author-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .author-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .author-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            min-width: 150px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0077B5;
+        }
+
+        .references {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <h2>Infographic Settings</h2>
+            
+            <div class="section">
+                <h3>Topic Information</h3>
+                <input type="text" id="titleInput" placeholder="Main Title (e.g., '5 Key Principles of UX Design')">
+                <textarea id="introInput" placeholder="Brief introduction to your topic..."></textarea>
+            </div>
+
+            <div class="section">
+                <h3>Key Points</h3>
+                <div id="pointsContainer">
+                    <div class="point-input">
+                        <input type="text" placeholder="Point Title" class="point-title">
+                        <textarea placeholder="Point Description" class="point-desc"></textarea>
+                    </div>
+                </div>
+                <button onclick="addPoint()">Add Another Point</button>
+            </div>
+
+            <div class="section">
+                <h3>Statistics (Optional)</h3>
+                <div id="statsContainer">
+                    <div class="stat-input">
+                        <input type="text" placeholder="Statistic Number" class="stat-number-input">
+                        <input type="text" placeholder="Statistic Label" class="stat-label">
+                    </div>
+                </div>
+                <button onclick="addStat()">Add Another Statistic</button>
+            </div>
+
+            <div class="section">
+                <h3>Author Information</h3>
+                <input type="file" id="authorImageInput" accept="image/*">
+                <input type="text" id="authorNameInput" placeholder="Your Name">
+                <input type="text" id="authorTitleInput" placeholder="Your Title">
+                <input type="text" id="authorLinkedinInput" placeholder="LinkedIn URL (optional)">
+            </div>
+
+            <div class="section">
+                <h3>References (Optional)</h3>
+                <textarea id="referencesInput" placeholder="Add your sources..."></textarea>
+            </div>
+
+            <div class="section">
+                <h3>Customize Colors</h3>
+                <div class="color-picker">
+                    <label>
+                        Background:
+                        <input type="color" id="bgColor" value="#ffffff">
+                    </label>
+                    <label>
+                        Accent:
+                        <input type="color" id="accentColor" value="#0077B5">
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="downloadInfographic()">Download Infographic</button>
+        </div>
+
+        <div class="preview">
+            <div id="infographic" class="infographic">
+                <div class="header">
+                    <h1 id="previewTitle">Your Title Here</h1>
+                    <p id="previewIntro">Your introduction will appear here...</p>
+                </div>
+
+                <div id="previewPoints">
+                    <!-- Points will be added here -->
+                </div>
+
+                <div id="previewStats" class="stats">
+                    <!-- Stats will be added here -->
+                </div>
+
+                <div class="author-section">
+                    <div class="author-image">
+                        <img id="previewAuthorImage" src="/api/placeholder/60/60" alt="Author">
+                    </div>
+                    <div>
+                        <h3 id="previewAuthorName">Your Name</h3>
+                        <p id="previewAuthorTitle">Your Title</p>
+                        <a id="previewLinkedin" href="#" target="_blank"></a>
+                    </div>
+                </div>
+
+                <div class="references" id="previewReferences"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle Title and Intro
+        document.getElementById('titleInput').addEventListener('input', function(e) {
+            document.getElementById('previewTitle').textContent = e.target.value || 'Your Title Here';
+        });
+
+        document.getElementById('introInput').addEventListener('input', function(e) {
+            document.getElementById('previewIntro').textContent = e.target.value || 'Your introduction will appear here...';
+        });
+
+        // Handle Points
+        function addPoint() {
+            const container = document.getElementById('pointsContainer');
+            const div = document.createElement('div');
+            div.className = 'point-input';
+            div.innerHTML = `
+                <input type="text" placeholder="Point Title" class="point-title">
+                <textarea placeholder="Point Description" class="point-desc"></textarea>
+            `;
+            container.appendChild(div);
+        }
+
+        function updatePoints() {
+            const points = document.querySelectorAll('.point-input');
+            const previewPoints = document.getElementById('previewPoints');
+            previewPoints.innerHTML = ''; // Clear existing points
+
+            points.forEach(point => {
+                const title = point.querySelector('.point-title').value || 'Untitled';
+                const desc = point.querySelector('.point-desc').value || 'No description available.';
+                const pointDiv = document.createElement('div');
+                pointDiv.className = 'key-point';
+                pointDiv.innerHTML = `
+                    <div class="point-number">${Array.from(points).indexOf(point) + 1}</div>
+                    <div>
+                        <strong>${title}</strong>
+                        <p>${desc}</p>
+                    </div>
+                `;
+                previewPoints.appendChild(pointDiv);
+            });
+        }
+
+        document.getElementById('pointsContainer').addEventListener('input', updatePoints);
+
+        // Handle Statistics
+        function addStat() {
+            const container = document.getElementById('statsContainer');
+            const div = document.createElement('div');
+            div.className = 'stat-input';
+            div.innerHTML = `
+                <input type="text" placeholder="Statistic Number" class="stat-number-input">
+                <input type="text" placeholder="Statistic Label" class="stat-label">
+            `;
+            container.appendChild(div);
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-input');
+            const previewStats = document.getElementById('previewStats');
+            previewStats.innerHTML = ''; // Clear existing stats
+
+            stats.forEach(stat => {
+                const number = stat.querySelector('.stat-number-input').value || 'N/A';
+                const label = stat.querySelector('.stat-label').value || 'No label';
+                const statBox = document.createElement('div');
+                statBox.className = 'stat-box';
+                statBox.innerHTML = `
+                    <div class="stat-number">${number}</div>
+                    <div>${label}</div>
+                `;
+                previewStats.appendChild(statBox);
+            });
+        }
+
+        document.getElementById('statsContainer').addEventListener('input', updateStats);
+
+        // Handle Author Info
+        document.getElementById('authorImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('previewAuthorImage').src = event.target.result;
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('authorNameInput').addEventListener('input', function(e) {
+            document.getElementById('previewAuthorName').textContent = e.target.value || 'Your Name';
+        });
+
+        document.getElementById('authorTitleInput').addEventListener('input', function(e) {
+            document.getElementById('previewAuthorTitle').textContent = e.target.value || 'Your Title';
+        });
+
+        document.getElementById('authorLinkedinInput').addEventListener('input', function(e) {
+            const url = e.target.value;
+            const previewLinkedin = document.getElementById('previewLinkedin');
+            previewLinkedin.href = url;
+            previewLinkedin.textContent = url ? 'LinkedIn Profile' : '';
+        });
+
+        // Handle References
+        document.getElementById('referencesInput').addEventListener('input', function(e) {
+            document.getElementById('previewReferences').textContent = e.target.value || '';
+        });
+
+        // Handle Color Customization
+        document.getElementById('bgColor').addEventListener('input', function(e) {
+            document.getElementById('infographic').style.backgroundColor = e.target.value;
+        });
+
+        document.getElementById('accentColor').addEventListener('input', function(e) {
+            const color = e.target.value;
+            const keyPoints = document.querySelectorAll('.key-point .point-number');
+            keyPoints.forEach(point => {
+                point.style.backgroundColor = color;
+            });
+        });
+
+        // Download Infographic
+        function downloadInfographic() {
+            html2canvas(document.getElementById('infographic')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'infographic.jpg';
+                link.href = canvas.toDataURL('image/jpeg');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
