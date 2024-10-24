@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 16px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .category {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+        }
+
+        .category h2 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-icon {
+            color: #6366f1;
+        }
+
+        .resources {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .resource {
+            padding: 0.8rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .resource:hover {
+            background: #f1f5f9;
+        }
+
+        .resource a {
+            text-decoration: none;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .resource a:hover {
+            color: #6366f1;
+        }
+
+        .resource-title {
+            font-weight: 500;
+        }
+
+        .external-link-icon {
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: #e0e7ff;
+            color: #6366f1;
+            margin-left: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .categories {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Job Seeker Resource Catalog</h1>
+            <p>A curated collection of resources for remote job seekers</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search resources..." id="searchInput">
+        </div>
+
+        <div class="categories">
+            <div class="category">
+                <h2>
+                    <i class="fas fa-laptop-house category-icon"></i>
+                    Remote Job Platforms
+                </h2>
+                <div class="resources">
+                    <div class="resource">
+                        <a href="https://jobspresso.co" target="_blank">
+                            <span class="resource-title">Jobspresso</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.simplyhired.com" target="_blank">
+                            <span class="resource-title">Simply Hired</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://angel.co/jobs" target="_blank">
+                            <span class="resource-title">Angel List</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.virtualvocations.com" target="_blank">
+                            <span class="resource-title">Virtual Vocations</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.flexjobs.com" target="_blank">
+                            <span class="resource-title">FlexJobs</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>
+                    <i class="fas fa-code category-icon"></i>
+                    Tech Job Boards
+                </h2>
+                <div class="resources">
+                    <div class="resource">
+                        <a href="https://stackoverflow.com/jobs" target="_blank">
+                            <span class="resource-title">Stack Overflow Jobs</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://remote.co" target="_blank">
+                            <span class="resource-title">Remote.co</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.dice.com" target="_blank">
+                            <span class="resource-title">Dice</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://techcareers.com" target="_blank">
+                            <span class="resource-title">Tech Careers</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>
+                    <i class="fas fa-globe category-icon"></i>
+                    Global Remote Work
+                </h2>
+                <div class="resources">
+                    <div class="resource">
+                        <a href="https://www.workingnomads.com" target="_blank">
+                            <span class="resource-title">Working Nomads</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://remoteok.com" target="_blank">
+                            <span class="resource-title">Remote OK</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://weworkremotely.com" target="_blank">
+                            <span class="resource-title">We Work Remotely</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.remotive.com" target="_blank">
+                            <span class="resource-title">Remotive</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>
+                    <i class="fas fa-book category-icon"></i>
+                    Skill Development
+                </h2>
+                <div class="resources">
+                    <div class="resource">
+                        <a href="https://www.coursera.org" target="_blank">
+                            <span class="resource-title">Coursera</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.udemy.com" target="_blank">
+                            <span class="resource-title">Udemy</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.linkedin.com/learning" target="_blank">
+                            <span class="resource-title">LinkedIn Learning</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.codecademy.com" target="_blank">
+                            <span class="resource-title">Codecademy</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>
+                    <i class="fas fa-handshake category-icon"></i>
+                    Networking
+                </h2>
+                <div class="resources">
+                    <div class="resource">
+                        <a href="https://www.meetup.com" target="_blank">
+                            <span class="resource-title">Meetup</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.linkedin.com" target="_blank">
+                            <span class="resource-title">LinkedIn</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.eventbrite.com" target="_blank">
+                            <span class="resource-title">Eventbrite</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.alignable.com" target="_blank">
+                            <span class="resource-title">Alignable</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>
+                    <i class="fas fa-info-circle category-icon"></i>
+                    Job Application Tips
+                </h2>
+                <div class="resources">
+                    <div class="resource">
+                        <a href="https://resumake.io" target="_blank">
+                            <span class="resource-title">Resumake</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.zety.com" target="_blank">
+                            <span class="resource-title">Zety Resume Builder</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.hloom.com" target="_blank">
+                            <span class="resource-title">Hloom Resume Templates</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.thebalancecareers.com/job-searching-tips-2061961" target="_blank">
+                            <span class="resource-title">The Balance Careers Tips</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>
+                    <i class="fas fa-comments category-icon"></i>
+                    Interview Preparation
+                </h2>
+                <div class="resources">
+                    <div class="resource">
+                        <a href="https://www.interviewing.io" target="_blank">
+                            <span class="resource-title">Interviewing.io</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.glassdoor.com" target="_blank">
+                            <span class="resource-title">Glassdoor Interview Questions</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.biginterview.com" target="_blank">
+                            <span class="resource-title">Big Interview</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                    <div class="resource">
+                        <a href="https://www.careerfoundry.com" target="_blank">
+                            <span class="resource-title">CareerFoundry Preparation Guide</span>
+                            <i class="fas fa-external-link-alt external-link-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Job Seeker Resource Catalog | Designed for aspiring remote professionals</p>
+        </footer>
+    </div>
+</body>
+</html>
