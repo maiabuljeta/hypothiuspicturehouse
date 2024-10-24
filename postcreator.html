@@ -27,7 +27,7 @@
             background: white;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Increased shadow */
         }
 
         .sidebar {
@@ -67,7 +67,7 @@
             height: 100%;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.3); /* Increased shadow around text rectangle */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Increased shadow */
             overflow: hidden;
             position: relative;
         }
@@ -78,28 +78,18 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            width: 90%;
-            max-width: 90%; /* Limit width */
+            width: 80%;
             transition: all 0.3s ease;
+            color: #333;
+            font-size: 60px; /* Base size for dynamic 3D effect */
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5),
+                         0 10px 30px rgba(0, 0, 0, 0.3), 
+                         0 15px 40px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
             padding: 10px;
             border-radius: 8px;
             border: 2px solid transparent;
-            overflow-wrap: break-word; /* Allow text to wrap */
-            font-size: 40px; /* Base font size */
+            font-weight: bold; /* Bold font for better 3D effect */
         }
-
-        /* 3D Text Layers */
-        .text-layer span {
-            display: block;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        .text-layer .layer-1 { color: #000; transform: translate(4px, 4px); }
-        .text-layer .layer-2 { color: #555; transform: translate(2px, 2px); }
-        .text-layer .layer-3 { color: #aaa; transform: translate(0px, 0px); }
-        .text-layer .layer-4 { color: #fff; }
 
         button {
             background: #0095f6;
@@ -206,12 +196,7 @@
 
         <div class="canvas-container">
             <div id="post-canvas">
-                <div class="text-layer" id="text-layer">
-                    <span class="layer-1">Your amazing caption here</span>
-                    <span class="layer-2">Your amazing caption here</span>
-                    <span class="layer-3">Your amazing caption here</span>
-                    <span class="layer-4">Your amazing caption here</span>
-                </div>
+                <div class="text-layer" id="text-layer">Your amazing caption here</div>
             </div>
         </div>
     </div>
@@ -224,70 +209,56 @@
         let currentColor = '#333333';
 
         textInput.addEventListener('input', (e) => {
-            const text = e.target.value;
-            updateTextLayers(text); // Update the text layers
-            adjustTextSize(); // Call to adjust text size based on content
+            textLayer.innerText = e.target.value;
         });
-
-        function updateTextLayers(text) {
-            const layers = textLayer.querySelectorAll('span');
-            layers.forEach(layer => {
-                layer.innerText = text; // Update each layer with the new text
-            });
-        }
 
         function updateStyle() {
             textLayer.style.fontFamily = fontSelect.value;
-            textLayer.style.color = currentColor;
             textLayer.style.fontSize = `${sizeSlider.value}px`;
+            textLayer.style.color = currentColor;
             textLayer.style.borderColor = currentColor;
-            adjustTextSize(); // Adjust text size when style is updated
         }
 
         function setColor(color) {
             currentColor = color;
-            updateStyle(); // Update the text color in the style function
+            updateStyle();
         }
 
-        function adjustTextSize() {
-            const text = textInput.value;
-            const maxWidth = textLayer.clientWidth;
-            const textSize = parseInt(sizeSlider.value);
+        function applyTemplate(type) {
+            const canvas = document.getElementById('post-canvas');
+            const textLayer = document.getElementById('text-layer');
 
-            // Limit text size based on max width
-            if (text.length > 20 && textSize > 20) {
-                sizeSlider.value = 20; // Set to minimum if too long
-            } else if (text.length > 30 && textSize > 40) {
-                sizeSlider.value = 40; // Keep within size limits
-            } else if (text.length > 40 && textSize > 30) {
-                sizeSlider.value = 30; // Adjust further if too long
-            }
-            updateStyle(); // Call to update style after adjusting size
-        }
-
-        function applyTemplate(template) {
-            switch (template) {
+            switch(type) {
                 case 'minimal':
-                    canvas.style.background = '#e8f0fe';
-                    textLayer.style.fontWeight = 'normal';
+                    canvas.style.background = '#ffffff';
+                    textLayer.style.color = '#333333';
+                    textLayer.style.fontFamily = "'Segoe UI'";
+                    textLayer.style.textShadow = '0 3px 10px rgba(0,0,0,0.2)';
                     break;
                 case 'bold':
-                    canvas.style.background = '#e8f0fe';
-                    textLayer.style.fontWeight = 'bold';
+                    canvas.style.background = '#000000';
+                    textLayer.style.color = '#ffffff';
+                    textLayer.style.fontFamily = "'Arial Black'";
+                    textLayer.style.letterSpacing = '2px';
+                    textLayer.style.textShadow = '0 5px 15px rgba(0,0,0,0.5)';
                     break;
                 case 'gradient':
-                    canvas.style.background = 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)';
-                    textLayer.style.fontWeight = 'normal';
+                    canvas.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
+                    textLayer.style.color = '#ffffff';
+                    textLayer.style.textShadow = '0 5px 20px rgba(0,0,0,0.5)';
                     break;
                 case 'quote':
-                    canvas.style.background = '#f0f2f5';
-                    textLayer.style.fontWeight = 'italic';
+                    canvas.style.background = '#f8f9fa';
+                    textLayer.style.color = '#333333';
+                    textLayer.style.fontFamily = "'Brush Script MT'";
+                    textLayer.style.textShadow = '0 3px 10px rgba(0,0,0,0.2)';
                     break;
             }
+            updateStyle();
         }
 
         function downloadPost() {
-            html2canvas(document.querySelector("#post-canvas")).then(canvas => {
+            html2canvas(document.getElementById('post-canvas')).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'instagram_post.png';
                 link.href = canvas.toDataURL();
@@ -297,4 +268,5 @@
     </script>
 </body>
 </html>
+
 
